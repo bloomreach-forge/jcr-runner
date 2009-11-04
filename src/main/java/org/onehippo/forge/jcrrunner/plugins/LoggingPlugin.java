@@ -24,7 +24,10 @@ import org.onehippo.forge.jcrrunner.RunnerPlugin;
  * Example {@link RunnerPlugin} implementation that just logs all calls.
  */
 public class LoggingPlugin extends AbstractRunnerPlugin {
-    
+
+    private long counter;
+    private long start;
+
     /**
      * {@inheritDoc}
      */
@@ -32,9 +35,25 @@ public class LoggingPlugin extends AbstractRunnerPlugin {
     public void visit(Node node) {
         try {
             getLogger().info("Visiting node {}", node.getPath());
+            counter++;
         } catch (RepositoryException e) {
             getLogger().error("Error getting node path", e);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void visitStart(Node node) {
+        start = System.currentTimeMillis();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void visitEnd(Node node) {
+        long duration = (System.currentTimeMillis() - start) / 1000L;
+        getLogger().info("Visited " + counter + " nodes in " + duration + " seconds.");
     }
 
 }
