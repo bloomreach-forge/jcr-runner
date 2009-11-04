@@ -24,6 +24,7 @@ import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 
+import org.hippoecm.repository.api.HippoNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,6 +104,30 @@ public class Runner {
         return false;
     }
 
+    /**
+     * Check if the node is virtual. 
+     * @param node
+     * @return true if the node is virtual otherwise false
+     */
+    private boolean isVirtual(Node node) {
+        if (node == null) {
+            return false;
+        }
+        if (!(node instanceof HippoNode)) {
+            return false;
+        }
+        HippoNode hippoNode = (HippoNode) node;
+        try {
+            Node canonical = hippoNode.getCanonicalNode();
+            if (canonical == null) {
+                return true;
+            }
+            return !hippoNode.getCanonicalNode().isSame(hippoNode);
+        } catch (RepositoryException e) {
+            log.error("Error while trying to determine if the node is virtual: " + node.getClass().getName(), e);
+            return false;
+        }
+    }
     //------------------------------- VISITOR ------------------------?
     private void recursiveVisit(String path) throws RepositoryException {
         Node node;
@@ -124,7 +149,7 @@ public class Runner {
             NodeIterator iter = node.getNodes();
             while (iter.hasNext() && keepRunning) {
                 Node child = iter.nextNode();
-                if (child != null) {
+                if (child != null && !isVirtual(node)) {
                     level++;
                     if (matchNodePath(child.getName())) {
                         recursiveVisit(child.getPath());
