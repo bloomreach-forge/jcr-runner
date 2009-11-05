@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.jcr.InvalidItemStateException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
@@ -149,10 +150,15 @@ public class Runner {
             NodeIterator iter = node.getNodes();
             while (iter.hasNext() && keepRunning) {
                 Node child = iter.nextNode();
-                if (child != null && !isVirtual(node)) {
+                if (child != null && !isVirtual(child)) {
                     level++;
-                    if (matchNodePath(child.getName())) {
-                        recursiveVisit(child.getPath());
+                    try {
+                        String name = child.getName();
+                        if (matchNodePath(name)) {
+                            recursiveVisit(child.getPath());
+                        }
+                    } catch (InvalidItemStateException e) {
+                        log.warn("InvalidItemStateException while getting child node: " + e.getMessage());
                     }
                     level--;
                 }
