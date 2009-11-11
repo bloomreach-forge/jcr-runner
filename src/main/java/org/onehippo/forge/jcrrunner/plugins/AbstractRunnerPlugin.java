@@ -94,7 +94,7 @@ public abstract class AbstractRunnerPlugin implements RunnerPlugin {
 
     /**
      * Get the static logger instance.
-     * @return
+     * @return the {@link Logger}
      */
     final protected Logger getLogger() {
         return log;

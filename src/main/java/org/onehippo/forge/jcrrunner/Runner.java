@@ -260,7 +260,8 @@ public class Runner {
             case BEANSHELL:
                 runnerPlugin = RunnerPluginFactory.createBeanShellPlugin(pluginConfig);
                 break;
-
+            default:
+                log.error("Unknown plugin of type {}", pluginConfig.getType());
             }
             if (runnerPlugin != null) {
                 registerPlugin(runnerPlugin);

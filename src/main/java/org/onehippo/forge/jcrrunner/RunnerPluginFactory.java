@@ -33,7 +33,7 @@ public class RunnerPluginFactory {
 
     /**
      * Instantiate a plugin from the beanshell
-     * @param RunnerPluginConfig the plugin config
+     * @param config the configuration of the plugin
      * @return a new Instance of the RunnerPlugin
      */
     public static RunnerPlugin createBeanShellPlugin(final RunnerPluginConfig config) {
@@ -61,7 +61,7 @@ public class RunnerPluginFactory {
 
     /**
      * Instantiate a plugin from the full className
-     * @param RunnerPluginConfig the plugin config
+     * @param config the configuration of the plugin
      * @return a new Instance of the RunnerPlugin
      */
     public static RunnerPlugin createJavaPlugin(final RunnerPluginConfig config) {

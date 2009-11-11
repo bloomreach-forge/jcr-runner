@@ -19,25 +19,19 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 /**
  * Change folder type by moving all subnodes to a new node
  */
 public class FolderConverterPlugin extends AbstractRunnerPlugin {
 
-    private static final Logger log = LoggerFactory.getLogger(FolderConverterPlugin.class);
-
     private static final String OLD_TYPE = "hippostd:directory";
     private static final String NEW_TYPE = "hippostd:folder";
     private static final String TMP_NAME = "tmptmptmptmp";
-        
 
-    private String[] nullValue = null;
     /**
-     * {@inheritDoc}
+     * Get the name of the pllugin
+     * @return the plugin name
      */
     public String getName() {
         return "Folder converter plugin";
@@ -48,14 +42,14 @@ public class FolderConverterPlugin extends AbstractRunnerPlugin {
      */
     public void visit(Node node) {
         try {
+            getLogger().debug("Visit node {}", node.getPath());
             if (!node.getPrimaryNodeType().getName().equals(OLD_TYPE)) {
                 return;
             }
-            getLogger().info("Visit node {}", node.getPath());
+            getLogger().info("Found folder of type {} : {}", OLD_TYPE, node.getPath());
 
             Node parent = node.getParent();
             Node newNode = createTmpNode(parent);
-            String name = node.getName();
             String path = node.getPath();
             String newPath = newNode.getPath();
             
@@ -73,6 +67,8 @@ public class FolderConverterPlugin extends AbstractRunnerPlugin {
             parent.getSession().move(newNode.getPath(), path);
             
             node.save();
+
+            getLogger().info("Changed folder " + path + " from type " + OLD_TYPE + " to type " + NEW_TYPE);
         } catch (RepositoryException e) {
             getLogger().error("Error getting node path", e);
         }

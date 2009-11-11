@@ -43,9 +43,9 @@ public interface RunnerPlugin {
     
 
     /**
-     * Get a value from the embedded {@link PluginConfig}
-     * @param key
-     * @return
+     * Get a value from the embedded {@link RunnerPluginConfig}
+     * @param key the name of the key
+     * @return the String value
      */
     public String getConfigValue(String key);
     
@@ -61,7 +61,7 @@ public interface RunnerPlugin {
     
     /**
      * Called when visiting the node
-     * @param node
+     * @param node The current JCR node to visit
      */
     public void visit(Node node);
     

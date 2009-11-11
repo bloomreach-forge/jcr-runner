@@ -1,1 +1,4 @@
 * text=auto !eol
+src/site/resources/images/icon_error_sml.gif -text
+src/site/resources/images/icon_info_sml.gif -text
+src/site/resources/images/icon_warning_sml.gif -text
