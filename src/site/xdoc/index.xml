@@ -20,9 +20,11 @@
     <title></title>
   </properties>
   <body>
-    <section name="">
-      <subsection name="">
-        <p>Just checkout the source from svn and:</p>
+    <section name="Hippo JCR Runner">
+      <subsection name="Hippo JCR Runner">
+        <p>The JCR Runner makes it easy to do bulk operations on a running JCR repository. For example you can change values of certain properties of all nodes of a certain type or move nodes from one type to another. The JCR Runner connects over rmi to a running repository.</p>
+        <p>Writing your own plugin is simple. The only thing you have to do is to extend the AbstractRunnerPlugin and implement the visit(Node) method.</p>
+        <a href="screenshot.html"><img src="images/jcr-runner-small.png" alt="the jcr runner in action"/></a>
       </subsection>
     </section>
   </body>
