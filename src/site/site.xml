@@ -32,9 +32,9 @@
     <href>/</href>
   </bannerLeft>
   <body>
-    <menu name="Hippo_JCR_Runner">
+    <menu name="Hippo JCR Runner">
       <item name="Home" href="/index.html"/>
-      <item name="Screenshots" href="/screenshot.html"/>
+      <item name="Screenshot" href="/screenshot.html"/>
       <item name="Run" href="/run.html"/>
       <item name="Build" href="/build.html"/>
       <item name="Plugins" href="/plugins.html"/>
