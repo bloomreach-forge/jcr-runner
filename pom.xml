@@ -64,7 +64,7 @@
 
   <!-- versions -->
   <properties>
-    <org.hippoecm.version>[2.06.00,2.09.99)</org.hippoecm.version>
+    <org.hippoecm.version>2.09.03</org.hippoecm.version>
     <javax.jcr.version>1.0</javax.jcr.version>
     <org.slf4j.version>[1.5.0,1.5.99)</org.slf4j.version>
     <log4j.version>[1.2.0,1.2.99)</log4j.version>
