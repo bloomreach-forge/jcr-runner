@@ -97,8 +97,8 @@ public class Runner {
         if (element.equals(path)) {
             return true;
         }
-        if (element.contains("*")) {
-            int pos = element.indexOf("*");
+        int pos = element.indexOf('*');
+        if (pos > 0) {
             String prefix = element.substring(0, pos);
             String suffix = "";
             if ((pos + 1) < element.length()) {

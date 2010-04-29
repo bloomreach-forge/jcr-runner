@@ -19,20 +19,12 @@ import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
-import javax.jcr.AccessDeniedException;
-import javax.jcr.InvalidItemStateException;
-import javax.jcr.ItemExistsException;
 import javax.jcr.LoginException;
 import javax.jcr.Node;
-import javax.jcr.PathNotFoundException;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
-import javax.jcr.lock.LockException;
-import javax.jcr.nodetype.ConstraintViolationException;
-import javax.jcr.nodetype.NoSuchNodeTypeException;
-import javax.jcr.version.VersionException;
 
 import org.apache.jackrabbit.rmi.client.ClientRepositoryFactory;
 import org.apache.jackrabbit.rmi.client.RemoteRepositoryException;
@@ -43,7 +35,10 @@ import org.hippoecm.repository.api.HippoNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-final public class JcrHelper {
+/**
+ * Helper class to deal with raw JCR
+ */
+public final class JcrHelper {
 
     private static final Logger log = LoggerFactory.getLogger(JcrHelper.class);
 
@@ -183,20 +178,6 @@ final public class JcrHelper {
             try {
                 session.save();
                 return true;
-            } catch (AccessDeniedException e) {
-                log.error("Error while saving the session.", e);
-            } catch (ItemExistsException e) {
-                log.error("Error while saving the session.", e);
-            } catch (ConstraintViolationException e) {
-                log.error("Error while saving the session.", e);
-            } catch (InvalidItemStateException e) {
-                log.error("Error while saving the session.", e);
-            } catch (VersionException e) {
-                log.error("Error while saving the session.", e);
-            } catch (LockException e) {
-                log.error("Error while saving the session.", e);
-            } catch (NoSuchNodeTypeException e) {
-                log.error("Error while saving the session.", e);
             } catch (RepositoryException e) {
                 log.error("Error while saving the session.", e);
             }
@@ -224,7 +205,7 @@ final public class JcrHelper {
         }
     }
 
-    public static Node getNode(final String path) throws PathNotFoundException, RepositoryException {
+    public static Node getNode(final String path) throws RepositoryException {
         if (!connect()) {
             return null;
         }
@@ -242,7 +223,7 @@ final public class JcrHelper {
         }
     }
 
-    public static final Node getRootNode() throws RepositoryException {
+    public static Node getRootNode() throws RepositoryException {
         return session.getRootNode();
     }
 

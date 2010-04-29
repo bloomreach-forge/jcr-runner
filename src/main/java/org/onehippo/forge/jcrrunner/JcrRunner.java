@@ -27,9 +27,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Main wrapper to start the shell.
+ * Main wrapper to start the runner.
  */
-public final class JcrRunner {
+final public class JcrRunner {
 
     private static final Logger log = LoggerFactory.getLogger(JcrRunner.class);
 

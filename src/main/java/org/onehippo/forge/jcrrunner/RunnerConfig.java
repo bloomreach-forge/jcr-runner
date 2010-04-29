@@ -25,7 +25,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.Map.Entry;
 
-public class RunnerConfig {
+public final class RunnerConfig {
 
     private static final String REPOSITORY_URL = "repository.url";
     private static final String REPOSITORY_USER = "repository.user";
@@ -85,7 +85,7 @@ public class RunnerConfig {
         readPluginInformation(props);
     }
 
-    private final void readRepositoryConfig(Properties props) {
+    private void readRepositoryConfig(Properties props) {
         String url = props.getProperty(REPOSITORY_URL);
         if (url == null || url.equals("")) {
             throw new IllegalArgumentException("repository.url is missing.");
@@ -108,7 +108,7 @@ public class RunnerConfig {
         setRepositoryPath(path);
     }
 
-    private final void readPluginInformation(Properties props) {
+    private void readPluginInformation(Properties props) {
         Set<Entry<Object, Object>> entries = props.entrySet();
         for (Entry<Object, Object> entry : entries) {
             String key = (String) entry.getKey();
