@@ -81,14 +81,14 @@ public abstract class AbstractRunnerPlugin implements RunnerPlugin {
     /**
      * {@inheritDoc}
      */
-    final public void setId(String id) {
+    public final void setId(String id) {
         this.id = id;
     }
 
     /**
      * {@inheritDoc}
      */
-    final public String getId() {
+    public final String getId() {
         return id;
     }
 
@@ -100,7 +100,7 @@ public abstract class AbstractRunnerPlugin implements RunnerPlugin {
         return log;
     }
 
-    final public void setConfig(RunnerPluginConfig config) {
+    public final void setConfig(RunnerPluginConfig config) {
         this.config = config;
     }
 

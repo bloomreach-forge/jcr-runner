@@ -28,18 +28,18 @@ public interface RunnerPlugin {
     /**
      * Get the id of the plugin
      */
-    public String getId();
+    String getId();
     
 
     /**
      * Get the id of the plugin
      */
-    public void setId(String id);
+    void setId(String id);
 
     /**
      * Get the name of the plugin
      */
-    public void setConfig(RunnerPluginConfig config);
+    void setConfig(RunnerPluginConfig config);
     
 
     /**
@@ -47,33 +47,33 @@ public interface RunnerPlugin {
      * @param key the name of the key
      * @return the String value
      */
-    public String getConfigValue(String key);
+    String getConfigValue(String key);
     
     /**
      * Initialization hook
      */
-    public void init();
+    void init();
 
     /**
      * Shutdown hook
      */
-    public void destroy();
+    void destroy();
     
     /**
      * Called when visiting the node
      * @param node The current JCR node to visit
      */
-    public void visit(Node node);
+    void visit(Node node);
     
     /**
      * Called before starting the visiting. 
      * @param node The root node of the traversing tree
      */
-    public void visitStart(Node node);
+    void visitStart(Node node);
     
     /**
      * Called after the visiting.
      * @param node The root node of the traversing tree
      */
-    public void visitEnd(Node node);
+    void visitEnd(Node node);
 }

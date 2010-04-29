@@ -43,30 +43,36 @@ public class Runner {
 
     //-------------------------------- PATH PARSING -----------------------------//
     public void setPath(String path) throws PathNotFoundException, RepositoryException {
-        if (path == null) {
-            path = "/";
-        }
-        if (!path.startsWith("/")) {
-            path = "/" + path;
-        }
-        this.startPath = findStartPath(path);
-        pathElements = Arrays.asList(path.substring(1).split("/"));
+        startPath = findStartPath(path);
+        pathElements = Arrays.asList(startPath.substring(1).split("/"));
         level = startPath.split("/").length - 2;
         wildcardLevel = pathElements.indexOf("**");
     }
 
     private String findStartPath(String path) {
-        String startPath = null;
-        if (path.contains("*")) {
-            startPath = path.substring(0, path.indexOf('*'));
+        String absPath = makePathAbsolute(path);
+        String beginPath = null;
+        int starPos = absPath.indexOf('*');
+        if (starPos > 0) {
+            beginPath = absPath.substring(0, starPos);
         } else {
-            startPath = path;
+            beginPath = absPath;
         }
-        int pos = startPath.lastIndexOf('/');
+        int pos = beginPath.lastIndexOf('/');
         if (pos > -1) {
-            startPath = startPath.substring(0, pos);
+            beginPath = beginPath.substring(0, pos);
         }
-        return startPath;
+        return beginPath;
+    }
+
+    private String makePathAbsolute(String path) {
+        if (path == null || path.length() == 0) {
+            return "/";
+        } else if (!path.startsWith("/")) {
+            return "/" + path;
+        } else {
+            return path;
+        }
     }
 
     /**
@@ -179,7 +185,7 @@ public class Runner {
             String rootPath = root.getPath();
             visitStart(root);
             recursiveVisit(rootPath);
-            if (keepRunning == true) {
+            if (keepRunning) {
                 JcrHelper.refresh(true);
                 visitEnd(JcrHelper.getNode(startPath));
             }
@@ -188,7 +194,7 @@ public class Runner {
             destroyPlugins();
         } catch (RepositoryException e) {
             destroyPlugins();
-            e.printStackTrace();
+            log.error("Error while running the plugins", e);
         }
         log.info("Runner finished.");
     }

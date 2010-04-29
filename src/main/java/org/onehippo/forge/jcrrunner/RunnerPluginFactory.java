@@ -24,12 +24,15 @@ import org.slf4j.LoggerFactory;
 import bsh.EvalError;
 import bsh.TargetError;
 
-public class RunnerPluginFactory {
+final public class RunnerPluginFactory {
 
     private static final Logger log = LoggerFactory.getLogger(RunnerPluginFactory.class);
 
     private static final String KEY_SCRIPT = "bsh";
     private static final String KEY_CLASS = "class";
+
+    private RunnerPluginFactory() {
+    }
 
     /**
      * Instantiate a plugin from the beanshell

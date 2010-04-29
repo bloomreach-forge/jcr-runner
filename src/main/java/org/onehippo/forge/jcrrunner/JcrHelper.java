@@ -43,7 +43,7 @@ import org.hippoecm.repository.api.HippoNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class JcrHelper {
+final public class JcrHelper {
 
     private static final Logger log = LoggerFactory.getLogger(JcrHelper.class);
 
@@ -138,19 +138,19 @@ public class JcrHelper {
             log.debug("Connected.");
             return true;
         } catch (RemoteRepositoryException e) {
-            log.error("Error while connection to server.", e);
+            log.error("Remote error while connection to server: " + getServer(), e);
         } catch (LoginException e) {
-            log.error("Error while connection to server.", e);
+            log.error("Unable to login to server: " + getServer(), e);
         } catch (RepositoryException e) {
-            log.error("Error while connection to server.", e);
+            log.error("Error while connection to server: " + getServer(), e);
         } catch (MalformedURLException e) {
-            log.error("Error while connection to server.", e);
+            log.error("Invalid connection url: " + getServer(), e);
         } catch (ClassCastException e) {
-            log.error("Error while connection to server.", e);
+            log.error("ClassCastException while connection to server: " + getServer(), e);
         } catch (RemoteException e) {
-            log.error("Error while connection to server.", e);
+            log.error("RemoteException while connection to server: " + getServer(), e);
         } catch (NotBoundException e) {
-            log.error("Error while connection to server.", e);
+            log.error("Server not found in rmi lookup: " + getServer(), e);
         }
         return false;
     }

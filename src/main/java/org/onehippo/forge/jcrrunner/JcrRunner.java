@@ -23,10 +23,15 @@ import java.io.IOException;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Main wrapper to start the shell.
  */
 public final class JcrRunner {
+
+    private static final Logger log = LoggerFactory.getLogger(JcrRunner.class);
 
     private static Runner runner = null;
 
@@ -63,9 +68,9 @@ public final class JcrRunner {
             runner.setPath(config.getRepositoryPath());
             runner.start();
         } catch (PathNotFoundException e) {
-            System.err.println(e.getMessage());
+            log.error("Configured start path not found: " + e.getMessage());
         } catch (RepositoryException e) {
-            e.printStackTrace();
+            log.error("Error while trying to set start path: " + config.getRepositoryPath(), e);
         }
         JcrHelper.disconnect();
     }

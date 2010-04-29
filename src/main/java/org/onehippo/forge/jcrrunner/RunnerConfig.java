@@ -85,7 +85,7 @@ public class RunnerConfig {
         readPluginInformation(props);
     }
 
-    private void readRepositoryConfig(Properties props) {
+    private final void readRepositoryConfig(Properties props) {
         String url = props.getProperty(REPOSITORY_URL);
         if (url == null || url.equals("")) {
             throw new IllegalArgumentException("repository.url is missing.");
@@ -108,7 +108,7 @@ public class RunnerConfig {
         setRepositoryPath(path);
     }
 
-    private void readPluginInformation(Properties props) {
+    private final void readPluginInformation(Properties props) {
         Set<Entry<Object, Object>> entries = props.entrySet();
         for (Entry<Object, Object> entry : entries) {
             String key = (String) entry.getKey();
