@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import bsh.EvalError;
 import bsh.TargetError;
 
-final public class RunnerPluginFactory {
+public final class RunnerPluginFactory {
 
     private static final Logger log = LoggerFactory.getLogger(RunnerPluginFactory.class);
 

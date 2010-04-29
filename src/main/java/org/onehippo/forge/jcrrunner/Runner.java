@@ -42,7 +42,7 @@ public class Runner {
     private List<RunnerPlugin> plugins = new ArrayList<RunnerPlugin>();
 
     //-------------------------------- PATH PARSING -----------------------------//
-    public void setPath(String path) throws PathNotFoundException, RepositoryException {
+    public void setPath(String path) throws RepositoryException {
         startPath = findStartPath(path);
         pathElements = Arrays.asList(startPath.substring(1).split("/"));
         level = startPath.split("/").length - 2;

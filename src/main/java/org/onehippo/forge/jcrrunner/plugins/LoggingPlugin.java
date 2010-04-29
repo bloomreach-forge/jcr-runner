@@ -18,13 +18,12 @@ package org.onehippo.forge.jcrrunner.plugins;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
-import org.onehippo.forge.jcrrunner.RunnerPlugin;
-
 /**
  * Example {@link RunnerPlugin} implementation that just logs all calls.
  */
 public class LoggingPlugin extends AbstractRunnerPlugin {
 
+    private static final long MILLISECONDS_IN_SECOND = 1000L;
     private long counter;
     private long start;
 
@@ -52,7 +51,7 @@ public class LoggingPlugin extends AbstractRunnerPlugin {
      * {@inheritDoc}
      */
     public void visitEnd(Node node) {
-        long duration = (System.currentTimeMillis() - start) / 1000L;
+        long duration = (System.currentTimeMillis() - start) / MILLISECONDS_IN_SECOND;
         getLogger().info("Visited " + counter + " nodes in " + duration + " seconds.");
     }
 

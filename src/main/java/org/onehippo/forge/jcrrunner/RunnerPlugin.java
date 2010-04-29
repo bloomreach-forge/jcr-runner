@@ -17,8 +17,6 @@ package org.onehippo.forge.jcrrunner;
 
 import javax.jcr.Node;
 
-import org.onehippo.forge.jcrrunner.plugins.AbstractRunnerPlugin;
-
 /**
  * All RunnerPlugins must implement this interface directly or
  * extend the {@link AbstractRunnerPlugin}.
