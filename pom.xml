@@ -62,6 +62,14 @@
     <url>http://forge.onehippo.org/svn/jcr-runner/</url>
   </scm>
 
+  <distributionManagement>
+    <repository>
+      <uniqueVersion>false</uniqueVersion>
+      <id>jcr-runner-maven-repo</id>
+      <url>svn:http://forge.onehippo.org/svn/jcr-runner/maven2/</url>
+    </repository>
+  </distributionManagement>
+
   <!-- versions -->
   <properties>
     <org.hippoecm.version>[2.06.09,2.09.99)</org.hippoecm.version>
@@ -338,6 +346,13 @@
         </plugin>
       </plugins>
     </pluginManagement>
+    <extensions>
+      <extension>
+        <groupId>org.jvnet.wagon-svn</groupId>
+        <artifactId>wagon-svn</artifactId>
+        <version>1.9</version>
+      </extension>
+    </extensions>
   </build>
 
 </project>
