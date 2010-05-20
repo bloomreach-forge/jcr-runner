@@ -165,7 +165,7 @@ public class Runner {
                             recursiveVisit(child.getPath());
                         }
                     } catch (InvalidItemStateException e) {
-                        log.warn("InvalidItemStateException while getting child node: " + e.getMessage());
+                        log.warn("InvalidItemStateException while getting child node, the node will be skipped: " + e.getMessage());
                     }
                     level--;
                 }
