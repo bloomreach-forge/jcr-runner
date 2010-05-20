@@ -131,8 +131,9 @@ public class Runner {
             }
             return !hippoNode.getCanonicalNode().isSame(hippoNode);
         } catch (RepositoryException e) {
-            log.error("Error while trying to determine if the node is virtual: " + node.getClass().getName(), e);
-            return false;
+            log.warn("Error while trying to determine if the node is virtual: " + node.getClass().getName()
+                    + ". This usually happens with semi-virtual nodes, returning true: " + e.getMessage());
+            return true;
         }
     }
     //------------------------------- VISITOR ------------------------?
