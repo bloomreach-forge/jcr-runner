@@ -42,6 +42,11 @@
     <url>http://forge.onehippo.org/projects/jcr-runner/</url>
   </issueManagement>
 
+   <ciManagement>
+     <system>Hudson</system>
+     <url>http://hudson.onehippo.org/job/Hippo%20Forge%20JCR%20Runner%20Trunk/</url>
+   </ciManagement>
+
   <developers>
     <developer>
       <name>Bart van der Schans</name>
