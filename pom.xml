@@ -21,7 +21,7 @@
   <description>Hippo ECM Jcr Runner</description>
   <groupId>org.onehippo.forge.jcrrunner</groupId>
   <artifactId>jcrrunner</artifactId>
-  <version>1.01.01-SNAPSHOT</version>
+  <version>1.02.00-SNAPSHOT</version>
 
   <!--  general info -->
   <url>http://forge.onehippo.org/gf/project/jcr-runner/</url>
@@ -77,8 +77,8 @@
 
   <!-- versions -->
   <properties>
-    <org.hippoecm.version>[2.06.09,2.09.99)</org.hippoecm.version>
-    <javax.jcr.version>1.0</javax.jcr.version>
+    <org.hippoecm.version>2.18.00RC1</org.hippoecm.version>
+    <javax.jcr.version>2.0</javax.jcr.version>
     <org.slf4j.version>[1.5.0,1.5.99)</org.slf4j.version>
     <log4j.version>[1.2.0,1.2.99)</log4j.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -119,8 +119,8 @@
       <version>${javax.jcr.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.hippoecm</groupId>
-      <artifactId>hippo-ecm-api</artifactId>
+      <groupId>org.onehippo.cms7</groupId>
+      <artifactId>hippo-repository-api</artifactId>
       <version>${org.hippoecm.version}</version>
       <exclusions>
         <exclusion>
@@ -134,8 +134,8 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.hippoecm</groupId>
-      <artifactId>hippo-ecm-repository-connector</artifactId>
+      <groupId>org.onehippo.cms7</groupId>
+      <artifactId>hippo-repository-connector</artifactId>
       <version>${org.hippoecm.version}</version>
       <exclusions>
         <exclusion>
