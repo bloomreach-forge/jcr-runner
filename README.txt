@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Querying? See pom runner.properties and pom.xml
+
 # build & run
 mvn clean compile exec:java
 

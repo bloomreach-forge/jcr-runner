@@ -288,6 +288,10 @@
         </executions>
         <configuration>
           <mainClass>org.onehippo.forge.jcrrunner.JcrRunner</mainClass>
+          <!--
+           enable if you want to query:
+          <mainClass>org.onehippo.forge.jcrrunner.JcrQueryRunner</mainClass>
+          -->
           <cleanupDeamonThreads>false</cleanupDeamonThreads>
         </configuration>
       </plugin>
@@ -305,6 +309,10 @@
           <programs>
             <program>
               <mainClass>org.onehippo.forge.jcrrunner.JcrRunner</mainClass>
+              <!--
+               enable if you want to query:
+              <mainClass>org.onehippo.forge.jcrrunner.JcrQueryRunner</mainClass>
+              -->
               <name>jcr-runner</name>
             </program>
           </programs>
