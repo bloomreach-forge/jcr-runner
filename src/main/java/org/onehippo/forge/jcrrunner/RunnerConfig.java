@@ -1,5 +1,5 @@
 /*
- *  Copyright 2009 Hippo.
+ *  Copyright 2009 - 2011 Hippo.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -31,16 +31,21 @@ public final class RunnerConfig {
     private static final String REPOSITORY_USER = "repository.user";
     private static final String REPOSITORY_PASS = "repository.pass";
     private static final String REPOSITORY_PATH = "repository.path";
+    private static final String REPOSITORY_QUERY = "repository.query";
+    private static final String REPOSITORY_QUERY_LANGUAGE = "repository.query.language";
+    private static final String REPOSITORY_QUERY_LANGUAGE_DEFAULT = "xpath";
 
     private static final String PLUGINS_JAVA = "plugins.java";
     private static final String PLUGINS_BEANSHELL = "plugins.beanshell";
 
     private SortedMap<String, RunnerPluginConfig> pluginConfigMap = new TreeMap<String, RunnerPluginConfig>();
-    
+
     private String repositoryUrl;
     private String repositoryUser;
     private String repositoryPass;
     private String repositoryPath;
+    private String repositoryQuery;
+    private String repositoryQueryLanguage;
 
     public String getRepositoryUrl() {
         return repositoryUrl;
@@ -74,38 +79,65 @@ public final class RunnerConfig {
         this.repositoryPath = repositoryPath;
     }
 
+    public String getRepositoryQuery() {
+        return repositoryQuery;
+    }
+
+    public void setRepositoryQuery(String repositoryQuery) {
+        this.repositoryQuery = repositoryQuery;
+    }
+
+    public String getRepositoryQueryLanguage() {
+        return repositoryQueryLanguage;
+    }
+
+    public void setRepositoryQueryLanguage(String repositoryQueryLanguage) {
+        if (isEmpty(repositoryQueryLanguage)) {
+            this.repositoryQueryLanguage = REPOSITORY_QUERY_LANGUAGE_DEFAULT;
+        } else {
+            this.repositoryQueryLanguage = repositoryQueryLanguage;
+        }
+    }
+
     public List<RunnerPluginConfig> getPluginConfigs() {
         return new ArrayList<RunnerPluginConfig>(pluginConfigMap.values());
     }
-    
+
     public RunnerConfig(InputStream inputStream) throws IOException {
         Properties props = new Properties();
         props.load(inputStream);
-        readRepositoryConfig(props);
+        readRunnerConfig(props);
+        validateRunnerConfig();
         readPluginInformation(props);
     }
 
-    private void readRepositoryConfig(Properties props) {
-        String url = props.getProperty(REPOSITORY_URL);
-        if (url == null || url.equals("")) {
+    private void readRunnerConfig(Properties props) {
+        setRepositoryUrl(props.getProperty(REPOSITORY_URL));
+        setRepositoryUser(props.getProperty(REPOSITORY_USER));
+        setRepositoryPass(props.getProperty(REPOSITORY_PASS));
+
+        setRepositoryPath(props.getProperty(REPOSITORY_PATH));
+        setRepositoryQuery(props.getProperty(REPOSITORY_QUERY));
+        setRepositoryQueryLanguage(props.getProperty(REPOSITORY_QUERY_LANGUAGE));
+    }
+
+    private void validateRunnerConfig() {
+        if (isEmpty(getRepositoryUrl())) {
             throw new IllegalArgumentException("repository.url is missing.");
         }
-        setRepositoryUrl(url);
-        String user = props.getProperty(REPOSITORY_USER);
-        if (user == null || user.equals("")) {
+        if (isEmpty(getRepositoryUser())) {
             throw new IllegalArgumentException("repository.user is missing.");
         }
-        setRepositoryUser(user);
-        String pass = props.getProperty(REPOSITORY_PASS);
-        if (pass == null || pass.equals("")) {
+        if (isEmpty(getRepositoryPass())) {
             throw new IllegalArgumentException("repository.pass is missing.");
         }
-        setRepositoryPass(pass);
-        String path = props.getProperty(REPOSITORY_PATH);
-        if (path == null || path.equals("")) {
-            throw new IllegalArgumentException("repository.path is missing.");
+        if (isEmpty(getRepositoryPath()) && isEmpty(getRepositoryQuery())) {
+            throw new IllegalArgumentException("Both repository.path and repository query are missing.");
         }
-        setRepositoryPath(path);
+    }
+
+    private boolean isEmpty(String s) {
+        return s == null || "".equals(s);
     }
 
     private void readPluginInformation(Properties props) {

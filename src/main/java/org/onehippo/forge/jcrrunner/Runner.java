@@ -1,5 +1,5 @@
 /*
- *  Copyright 2009 Hippo.
+ *  Copyright 2009 - 2011 Hippo.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,6 +24,10 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
 
 import org.hippoecm.repository.api.HippoNode;
 import org.slf4j.Logger;
@@ -32,6 +36,8 @@ import org.slf4j.LoggerFactory;
 public class Runner {
 
     private static final Logger log = LoggerFactory.getLogger(Runner.class);
+    private String query;
+    private String queryLanguage;
     private String startPath;
     private List<String> pathElements;
     private int level = 0;
@@ -40,6 +46,15 @@ public class Runner {
     private volatile boolean keepRunning = true;
 
     private List<RunnerPlugin> plugins = new ArrayList<RunnerPlugin>();
+
+    //-------------------------------- QUERY -----------------------------//
+    public void setQuery(String query) {
+        this.query = query;
+    }
+
+    public void setQueryLanguage(String queryLanguage) {
+        this.queryLanguage = queryLanguage;
+    }
 
     //-------------------------------- PATH PARSING -----------------------------//
     public void setPath(String path) throws RepositoryException {
@@ -136,6 +151,7 @@ public class Runner {
             return true;
         }
     }
+
     //------------------------------- VISITOR ------------------------?
     private void recursiveVisit(String path) throws RepositoryException {
         Node node;
@@ -165,10 +181,48 @@ public class Runner {
                             recursiveVisit(child.getPath());
                         }
                     } catch (InvalidItemStateException e) {
-                        log.warn("InvalidItemStateException while getting child node, the node will be skipped: " + e.getMessage());
+                        log.warn("InvalidItemStateException while getting child node, the node will be skipped: "
+                                + e.getMessage());
                     }
                     level--;
                 }
+            }
+        }
+    }
+
+    private void runPathVisitor() throws RepositoryException {
+        Node root = JcrHelper.getNode(startPath);
+        String rootPath = root.getPath();
+        visitStart(root);
+        recursiveVisit(rootPath);
+        if (keepRunning) {
+            JcrHelper.refresh(true);
+            visitEnd(JcrHelper.getNode(startPath));
+        }
+    }
+
+    private void runQueryVisitor() throws RepositoryException {
+        Session session = JcrHelper.getRootNode().getSession();
+
+        QueryManager queryManager = session.getWorkspace().getQueryManager();
+        Query jcrQuery = queryManager.createQuery(query, queryLanguage);
+        QueryResult results = jcrQuery.execute();
+
+        NodeIterator iter = results.getNodes();
+
+        boolean isFirst = true;
+        while (iter.hasNext() && keepRunning) {
+            Node child = iter.nextNode();
+            if (child != null && !isVirtual(child)) {
+                if (isFirst) {
+                    visitStart(child);
+                    isFirst = false;
+                } else if (!iter.hasNext()) {
+                    visitEnd(child);
+                } else {
+                    visit(child);
+                }
+                JcrHelper.refresh(true);
             }
         }
     }
@@ -182,14 +236,8 @@ public class Runner {
         initPlugins();
         keepRunning = true;
         try {
-            Node root = JcrHelper.getNode(startPath);
-            String rootPath = root.getPath();
-            visitStart(root);
-            recursiveVisit(rootPath);
-            if (keepRunning) {
-                JcrHelper.refresh(true);
-                visitEnd(JcrHelper.getNode(startPath));
-            }
+            runPathVisitor();
+            runQueryVisitor();
         } catch (PathNotFoundException e) {
             log.error("Path not found: " + startPath);
             destroyPlugins();

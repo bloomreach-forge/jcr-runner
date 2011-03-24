@@ -1,5 +1,5 @@
 /*
- *  Copyright 2009 Hippo.
+ *  Copyright 2009 - 2011 Hippo.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -66,6 +66,8 @@ public final class JcrRunner {
             runner = new Runner();
             runner.registerPlugins(config.getPluginConfigs());
             runner.setPath(config.getRepositoryPath());
+            runner.setQueryLanguage(config.getRepositoryQueryLanguage());
+            runner.setQuery(config.getRepositoryQuery());
             runner.start();
         } catch (PathNotFoundException e) {
             log.error("Configured start path not found: " + e.getMessage());
