@@ -215,9 +215,11 @@ public class Runner {
             Node child = iter.nextNode();
             if (child != null && !isVirtual(child)) {
                 if (isFirst) {
-                    visitStart(child);
                     isFirst = false;
+                    visitStart(child);
+                    visit(child);
                 } else if (!iter.hasNext()) {
+                    visit(child);
                     visitEnd(child);
                 } else {
                     visit(child);
