@@ -62,9 +62,9 @@
   </developers>
 
   <scm>
-    <connection>scm:svn:https://forge.onehippo.org/svn/jcr-runner</connection>
-    <developerConnection>scm:svn:https://forge.onehippo.org/svn/jcr-runner</developerConnection>
-    <url>https://forge.onehippo.org/svn/jcr-runner/</url>
+    <connection>scm:svn:https://forge.onehippo.org/svn/jcr-runner/trunk</connection>
+    <developerConnection>scm:svn:https://forge.onehippo.org/svn/jcr-runner/trunk</developerConnection>
+    <url>https://forge.onehippo.org/svn/jcr-runner/trunk</url>
   </scm>
 
   <distributionManagement>
