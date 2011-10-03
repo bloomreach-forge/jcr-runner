@@ -17,12 +17,7 @@ package org.onehippo.forge.jcrrunner;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.Map.Entry;
 
 public final class RunnerConfig {
@@ -106,6 +101,14 @@ public final class RunnerConfig {
     public RunnerConfig(InputStream inputStream) throws IOException {
         Properties props = new Properties();
         props.load(inputStream);
+        initializeRunnerConfig(props);
+    }
+
+    public RunnerConfig(Properties props) {
+        initializeRunnerConfig(props);
+    }
+
+    private void initializeRunnerConfig(Properties props) {
         readRunnerConfig(props);
         validateRunnerConfig();
         readPluginInformation(props);

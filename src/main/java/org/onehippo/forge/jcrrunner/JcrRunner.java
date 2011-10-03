@@ -15,16 +15,16 @@
  */
 package org.onehippo.forge.jcrrunner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Properties;
 
 /**
  * Main wrapper to start the runner.
@@ -45,13 +45,7 @@ public final class JcrRunner {
     }
 
     public static void main(final String[] args) throws IOException {
-        // read & parse config
-        String fileName = DEFAULT_CONFIG_FILE;
-        if (args != null && args.length > 0) {
-            fileName = args[0];
-        }
-        File file = new File(fileName);
-        RunnerConfig config = new RunnerConfig(new BufferedInputStream(new FileInputStream(file)));
+        RunnerConfig config = parseConfig(args);
 
         // register hook for proper shutdown
         Runtime.getRuntime().addShutdownHook(new ShutdownHook());
@@ -75,6 +69,23 @@ public final class JcrRunner {
             log.error("Error while trying to set start path: " + config.getRepositoryPath(), e);
         }
         JcrHelper.disconnect();
+    }
+
+    static RunnerConfig parseConfig(String[] args) throws IOException {
+        // read & parse config
+        RunnerConfig config;
+        if (args != null && args.length > 0) {
+            Properties props = new Properties();
+            for (String arg : args) {
+                File file = new File(arg);
+                props.load(new BufferedInputStream(new FileInputStream(file)));
+            }
+            config = new RunnerConfig(props);
+        } else {
+            File file = new File(DEFAULT_CONFIG_FILE);
+            config = new RunnerConfig(new BufferedInputStream(new FileInputStream(file)));
+        }
+        return config;
     }
 
     /**
