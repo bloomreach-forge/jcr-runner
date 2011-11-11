@@ -58,6 +58,9 @@ public class Runner {
 
     //-------------------------------- PATH PARSING -----------------------------//
     public void setPath(String path) throws RepositoryException {
+        if (path == null || path.length() == 0) {
+            return;
+        }
         startPath = findStartPath(path);
         pathElements = Arrays.asList(startPath.substring(1).split("/"));
         level = startPath.split("/").length - 2;
@@ -191,6 +194,10 @@ public class Runner {
     }
 
     private void runPathVisitor() throws RepositoryException {
+        if (startPath == null) {
+            log.info("No path set. Skipping path visitor.");
+            return;
+        }
         Node root = JcrHelper.getNode(startPath);
         String rootPath = root.getPath();
         visitStart(root);
@@ -244,8 +251,8 @@ public class Runner {
             log.error("Path not found: " + startPath);
             destroyPlugins();
         } catch (RepositoryException e) {
-            destroyPlugins();
             log.error("Error while running the plugins", e);
+            destroyPlugins();
         }
         log.info("Runner finished.");
     }
