@@ -15,23 +15,17 @@
  */
 package org.onehippo.forge.jcrrunner;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.jcr.InvalidItemStateException;
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
-
 import org.hippoecm.repository.api.HippoNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jcr.*;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Runner {
 
@@ -209,6 +203,10 @@ public class Runner {
     }
 
     private void runQueryVisitor() throws RepositoryException {
+        if (query == null) {
+            log.info("No query set. Skipping query visitor.");
+            return;
+        }
         Session session = JcrHelper.getRootNode().getSession();
 
         QueryManager queryManager = session.getWorkspace().getQueryManager();
