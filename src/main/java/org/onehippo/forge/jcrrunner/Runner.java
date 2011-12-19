@@ -55,15 +55,15 @@ public class Runner {
         if (path == null || path.length() == 0) {
             return;
         }
-        startPath = findStartPath(path);
-        pathElements = Arrays.asList(startPath.substring(1).split("/"));
+        String absPath = makePathAbsolute(path);
+        startPath = findStartPath(absPath);
+        pathElements = Arrays.asList(absPath.substring(1).split("/"));
         level = startPath.split("/").length - 2;
         wildcardLevel = pathElements.indexOf("**");
     }
 
-    private String findStartPath(String path) {
-        String absPath = makePathAbsolute(path);
-        String beginPath = null;
+    private String findStartPath(String absPath) {
+        String beginPath;
         int starPos = absPath.indexOf('*');
         if (starPos > 0) {
             beginPath = absPath.substring(0, starPos);
