@@ -21,7 +21,7 @@
   <description>Hippo ECM Jcr Runner</description>
   <groupId>org.onehippo.forge.jcrrunner</groupId>
   <artifactId>jcrrunner</artifactId>
-  <version>1.02.04</version>
+  <version>1.02.05-SNAPSHOT</version>
 
   <!--  general info -->
   <url>https://forge.onehippo.org/gf/project/jcr-runner/</url>
@@ -62,9 +62,9 @@
   </developers>
 
   <scm>
-    <connection>scm:svn:https://forge.onehippo.org/svn/jcr-runner/tags/jcrrunner-1.02.04</connection>
-    <developerConnection>scm:svn:https://forge.onehippo.org/svn/jcr-runner/tags/jcrrunner-1.02.04</developerConnection>
-    <url>https://forge.onehippo.org/svn/jcr-runner/tags/jcrrunner-1.02.04</url>
+    <connection>scm:svn:https://forge.onehippo.org/svn/jcr-runner/trunk</connection>
+    <developerConnection>scm:svn:https://forge.onehippo.org/svn/jcr-runner/trunk</developerConnection>
+    <url>https://forge.onehippo.org/svn/jcr-runner/trunk</url>
   </scm>
 
   <distributionManagement>
