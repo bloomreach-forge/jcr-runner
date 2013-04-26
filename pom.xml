@@ -27,7 +27,7 @@
   <description>Hippo ECM Jcr Runner</description>
   <groupId>org.onehippo.forge.jcrrunner</groupId>
   <artifactId>jcrrunner</artifactId>
-  <version>1.02.06-SNAPSHOT</version>
+  <version>1.02.05-SNAPSHOT</version>
 
   <!--  general info -->
   <url>https://forge.onehippo.org/gf/project/jcr-runner/</url>
