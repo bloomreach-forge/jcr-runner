@@ -15,17 +15,23 @@
  */
 package org.onehippo.forge.jcrrunner;
 
-import org.hippoecm.repository.api.HippoNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.jcr.*;
-import javax.jcr.query.Query;
-import javax.jcr.query.QueryManager;
-import javax.jcr.query.QueryResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.jcr.InvalidItemStateException;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.PathNotFoundException;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.query.Query;
+import javax.jcr.query.QueryManager;
+import javax.jcr.query.QueryResult;
+
+import org.hippoecm.repository.api.HippoNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Runner {
 
@@ -168,9 +174,20 @@ public class Runner {
         }
         if (node.hasNodes()) {
             NodeIterator iter = node.getNodes();
-            while (iter.hasNext() && keepRunning) {
-                Node child = iter.nextNode();
-                if (child != null && !isVirtual(child)) {
+            List<String> nodeIds = new ArrayList<String>();
+            while (iter.hasNext()) {
+                final Node child = iter.nextNode();
+                if (!isVirtual(child)) {
+                    nodeIds.add(child.getIdentifier());
+                }
+            }
+
+            for (String id : nodeIds) {
+                if (!keepRunning) {
+                    break;
+                }
+                Node child = node.getSession().getNodeByIdentifier(id);
+                if (child != null) {
                     level++;
                     try {
                         String name = child.getName();
@@ -214,11 +231,21 @@ public class Runner {
         QueryResult results = jcrQuery.execute();
 
         NodeIterator iter = results.getNodes();
+        List<String> nodeIds = new ArrayList<String>();
+        while (iter.hasNext()) {
+            final Node child = iter.nextNode();
+            if (!isVirtual(child)) {
+                nodeIds.add(child.getIdentifier());
+            }
+        }
 
         boolean isFirst = true;
-        while (iter.hasNext() && keepRunning) {
-            Node child = iter.nextNode();
-            if (child != null && !isVirtual(child)) {
+        for (String id : nodeIds) {
+            if (!keepRunning) {
+                break;
+            }
+            Node child = session.getNodeByIdentifier(id);
+            if (child != null) {
                 if (isFirst) {
                     isFirst = false;
                     visitStart(child);
