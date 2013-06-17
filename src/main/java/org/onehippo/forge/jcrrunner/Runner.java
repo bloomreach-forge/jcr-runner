@@ -246,13 +246,18 @@ public class Runner {
             }
             Node child = session.getNodeByIdentifier(id);
             if (child != null) {
+                String childPath = child.getPath();
                 if (isFirst) {
                     isFirst = false;
                     visitStart(child);
-                    visit(child);
+                    if (session.itemExists(childPath)) {
+                        visit(child);
+                    }
                 } else if (!iter.hasNext()) {
                     visit(child);
-                    visitEnd(child);
+                    if (session.itemExists(childPath)) {
+                        visitEnd(child);
+                    }
                 } else {
                     visit(child);
                 }
