@@ -21,17 +21,17 @@
   <body>
     <section name="Build and running">
       <subsection name="Maven dependency">
-        <p>Prefered way is to get the code as Maven dependency into your project</p>
+        <p>Preferred way is to get the code as Maven dependency into your project.</p>
         <source><![CDATA[<dependency>
   <groupId>org.onehippo.forge.jcrrunner</groupId>
   <artifactId>jcrrunner</artifactId>
-  <version>${jcrrunner.version}</version>
+  <version>${forge.jcrrunner.version}</version>
 </dependency>]]></source>
       </subsection>
       <subsection name="Build from source">
         <p>If you want to build it yourself, check out the source from svn:</p>
         <source>svn co http://forge.onehippo.org/svn/jcr-runner/trunk jcr-runner</source>
-        <p>To In the project root type</p>
+        <p>In the project root type</p>
         <source>mvn clean compile exec:java</source>
         <p>After the first run you can use the slightly faster command</p>
         <source>mvn -o -q compile exec:java</source>
