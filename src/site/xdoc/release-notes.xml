@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<!--
+  Copyright 2010-2013 Hippo B.V. (http://www.onehippo.com)
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<document>
+  <properties>
+    <title>Release Notes</title>
+  </properties>
+  <body>
+    <section name="Release Notes">
+      <subsection name="1.02.06">
+        <ul>
+          <li><a href="https://issues.onehippo.com/browse/HIPPLUG-672">HIPPLUG-672</a><br/>
+            Method AbstractRunnerPlugin#visitEnd was called for every found node in a query.</li>
+          <li><a href="https://issues.onehippo.com/browse/HIPPLUG-656">HIPPLUG-656</a><br/>
+            Method AbstractRunnerPlugin#visitEnd throws exceptions if the runner is used for deletions.</li>
+        </ul>
+      </subsection>
+      <subsection name="1.02.05">
+        <ul>
+          <li>Build list of node ids before invoking the visitors.</li>
+          <li>CMS7-6812: inherit from project pom, added apache-rat plugin to check license headers.</li>
+        </ul>
+      </subsection>
+      <subsection name="1.02.04">
+        <ul>
+          <li>Path visitor again traverses recursively when path ends with '**'.</li>
+        </ul>
+      </subsection>
+      <subsection name="1.02.03">
+        <ul>
+          <li>Skip query visitor when no query has been provided.</li>
+        </ul>
+      </subsection>
+      <subsection name="1.02.02">
+        <ul>
+          <li>Allow for not setting a path.</li>
+        </ul>
+      </subsection>
+      <subsection name="1.02.01">
+        <ul>
+          <li>Allow for multiple config files on the command line, so for example credentials can be stored in a
+            separate properties file.</li>
+        </ul>
+      </subsection>
+      <subsection name="1.02.00">
+        <ul>
+          <li>Underdocumented but stable release.</li>
+        </ul>
+      </subsection>
+     </section>
+  </body>
+</document>

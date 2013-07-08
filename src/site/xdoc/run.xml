@@ -19,30 +19,22 @@
     <title>Running the JCR Runner</title>
   </properties>
   <body>
-    <section name="Running">
-      <subsection name="Using the zip">
-        <subsection name="Install">
-          <p>Download the latest release from the files section</p>
-          <p>Unzip</p>
-        </subsection>
-        <subsection name="Run">
-          <p>On windows use</p>
-          <code>bin/jcr-runner.bat</code>
-          <p>On linux/osx use</p>
-          <code>sh bin/jcr-runner</code>
-        </subsection>
+    <section name="Build and running">
+      <subsection name="Maven dependency">
+        <p>Prefered way is to get the code as Maven dependency into your project</p>
+        <source><![CDATA[<dependency>
+  <groupId>org.onehippo.forge.jcrrunner</groupId>
+  <artifactId>jcrrunner</artifactId>
+  <version>${jcrrunner.version}</version>
+</dependency>]]></source>
       </subsection>
-      <subsection name="From source">
-        <subsection name="Install">
-          <p>Check out the source from svn:</p>
-          <code>svn co http://forge.onehippo.org/svn/jcr-runner/trunk jcr-runner</code>
-        </subsection>
-        <subsection name="Build and run">
-          <p>In the project root type</p>
-          <code>mvn clean compile exec:java</code>
-          <p>After the first run you can use the slightly faster command</p>
-          <code>mvn -o -q compile exec:java</code>
-        </subsection>
+      <subsection name="Build from source">
+        <p>If you want to build it yourself, check out the source from svn:</p>
+        <source>svn co http://forge.onehippo.org/svn/jcr-runner/trunk jcr-runner</source>
+        <p>To In the project root type</p>
+        <source>mvn clean compile exec:java</source>
+        <p>After the first run you can use the slightly faster command</p>
+        <source>mvn -o -q compile exec:java</source>
       </subsection>
       <subsection name="Configuring the properties">
         <p>The properties can be found in the runner.properties</p>
@@ -53,50 +45,40 @@
             <strong>**</strong>
             can be used. For example:
           </p>
-          <code>repository.path=/content/documents/*/2009/**</code>
+          <source>repository.path=/content/documents/*/2009/**</source>
           <p>This will match /content/documents/[any path element]/2009/[everything below]</p>
         </subsection>
         <subsection name="Using queries">
-          <code>repository.query.language=xpath</code>
+          <source>repository.query.language=xpath</source>
           <p>Specify the query language, in this case "xpath"</p>
-          <code>repository.query=content/gallery//element(*, hippogallery:imageset)</code>
+          <source>repository.query=content/gallery//element(*, hippogallery:imageset)</source>
           <p>This will match all document; within path "content/gallery which are of the type "hippogallery:imageset"
           </p>
         </subsection>
-        <subsection name="Configuring the plugin">
-        </subsection>
         <subsection name="Example path usage">
-          <pre>
-            <code>
-              # repository configuration
-              repository.url=rmi://127.0.0.1:1099/hipporepository
-              repository.user=admin
-              repository.pass=admin
+          <source>  # repository configuration
+  repository.url=rmi://127.0.0.1:1099/hipporepository
+  repository.user=admin
+  repository.pass=admin
 
-              # everything that starts with /content/documents
-              repository.path=/content/documents/**
+  # everything that starts with /content/documents
+  repository.path=/content/documents/**
 
-              # Java plugins
-              plugins.java.logplugin.class=org.onehippo.forge.jcrrunner.plugins.LoggingPlugin
-            </code>
-          </pre>
+  # Java plugins
+  plugins.java.logplugin.class=org.onehippo.forge.jcrrunner.plugins.LoggingPlugin</source>
         </subsection>
         <subsection name="Example query usage">
-          <pre>
-            <code>
-              # repository configuration
-              repository.url=rmi://127.0.0.1:1099/hipporepository
-              repository.user=admin
-              repository.pass=admin
+          <source>  # repository configuration
+  repository.url=rmi://127.0.0.1:1099/hipporepository
+  repository.user=admin
+  repository.pass=admin
 
-              repository.query.language=xpath
-              repository.query=content/gallery//element(*, hippogallery:imageset)
+  repository.query.language=xpath
+  repository.query=content/gallery//element(*, hippogallery:imageset)
 
-              # Java plugins
-              plugins.java.logplugin.class=org.onehippo.forge.jcrrunner.plugins.LoggingPlugin
-            </code>
-          </pre>
-          <p>Note that you will have to change the pom.xml to run Jcr<b>Query</b>Runner</p>
+  # Java plugins
+  plugins.java.logplugin.class=org.onehippo.forge.jcrrunner.plugins.LoggingPlugin
+          </source>
         </subsection>
       </subsection>
     </section>
