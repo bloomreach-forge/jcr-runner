@@ -17,6 +17,7 @@ package org.onehippo.forge.jcrrunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.jcr.InvalidItemStateException;
@@ -95,11 +96,9 @@ public class Runner {
 
     /**
      * Match:
-     * - /asdf/** 
+     * - /asdf/**
      * - /asdf/asd*sdf
      * - /asdf/qwer
-     * @param path
-     * @return
      */
     private boolean matchNodePath(String path) {
         if (wildcardLevel != -1 && level >= wildcardLevel) {
@@ -130,8 +129,8 @@ public class Runner {
     }
 
     /**
-     * Check if the node is virtual. 
-     * @param node
+     * Check if the node is virtual.
+     * @param node given node to check
      * @return true if the node is virtual otherwise false
      */
     private boolean isVirtual(Node node) {
@@ -230,21 +229,23 @@ public class Runner {
         Query jcrQuery = queryManager.createQuery(query, queryLanguage);
         QueryResult results = jcrQuery.execute();
 
-        NodeIterator iter = results.getNodes();
         List<String> nodeIds = new ArrayList<String>();
-        while (iter.hasNext()) {
-            final Node child = iter.nextNode();
+        NodeIterator resultsIter = results.getNodes();
+        while (resultsIter.hasNext()) {
+            final Node child = resultsIter.nextNode();
             if (!isVirtual(child)) {
                 nodeIds.add(child.getIdentifier());
             }
         }
 
         boolean isFirst = true;
-        for (String id : nodeIds) {
+        Iterator<String> nodeIdIter = nodeIds.iterator();
+        while (nodeIdIter.hasNext()) {
             if (!keepRunning) {
                 break;
             }
-            Node child = session.getNodeByIdentifier(id);
+            final String nodeId = nodeIdIter.next();
+            Node child = session.getNodeByIdentifier(nodeId);
             if (child != null) {
                 String childPath = child.getPath();
                 if (isFirst) {
@@ -253,7 +254,7 @@ public class Runner {
                     if (session.itemExists(childPath)) {
                         visit(child);
                     }
-                } else if (!iter.hasNext()) {
+                } else if (!nodeIdIter.hasNext()) {
                     visit(child);
                     if (session.itemExists(childPath)) {
                         visitEnd(child);
