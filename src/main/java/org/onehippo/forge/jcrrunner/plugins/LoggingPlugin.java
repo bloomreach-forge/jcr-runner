@@ -16,9 +16,10 @@
 package org.onehippo.forge.jcrrunner.plugins;
 
 import javax.jcr.Node;
-import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.onehippo.forge.jcrrunner.JcrHelper;
+import org.onehippo.forge.jcrrunner.RunnerPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,19 +30,13 @@ public class LoggingPlugin extends AbstractRunnerPlugin {
 
     private static Logger log = LoggerFactory.getLogger(LoggingPlugin.class);
 
-
-
     @Override
     public void init(Session session) {
     }
 
     @Override
     public void visit(Node node) {
-        try {
-            log.info("Visiting node {}", node.getPath());
-        } catch (RepositoryException e) {
-            log.error("Error getting node path", e);
-        }
+        log.info("Visiting node {}", JcrHelper.getSavePath(node));
     }
 
     @Override
