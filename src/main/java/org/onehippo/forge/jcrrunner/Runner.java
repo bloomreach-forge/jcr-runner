@@ -17,7 +17,6 @@ package org.onehippo.forge.jcrrunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.jcr.InvalidItemStateException;
@@ -128,32 +127,6 @@ public class Runner {
         return false;
     }
 
-    /**
-     * Check if the node is virtual.
-     * @param node given node to check
-     * @return true if the node is virtual otherwise false
-     */
-    private boolean isVirtual(Node node) {
-        if (node == null) {
-            return false;
-        }
-        if (!(node instanceof HippoNode)) {
-            return false;
-        }
-        HippoNode hippoNode = (HippoNode) node;
-        try {
-            Node canonical = hippoNode.getCanonicalNode();
-            if (canonical == null) {
-                return true;
-            }
-            return !hippoNode.getCanonicalNode().isSame(hippoNode);
-        } catch (RepositoryException e) {
-            log.warn("Error while trying to determine if the node is virtual: " + node.getClass().getName()
-                    + ". This usually happens with semi-virtual nodes, returning true: " + e.getMessage());
-            return true;
-        }
-    }
-
     //------------------------------- VISITOR ------------------------?
     private void recursiveVisit(String path) throws RepositoryException {
         Node node;
@@ -173,32 +146,25 @@ public class Runner {
         }
         if (node.hasNodes()) {
             NodeIterator iter = node.getNodes();
-            List<String> nodeIds = new ArrayList<String>();
             while (iter.hasNext()) {
-                final Node child = iter.nextNode();
-                if (!isVirtual(child)) {
-                    nodeIds.add(child.getIdentifier());
-                }
-            }
-
-            for (String id : nodeIds) {
                 if (!keepRunning) {
                     break;
                 }
-                Node child = node.getSession().getNodeByIdentifier(id);
-                if (child != null) {
-                    level++;
-                    try {
-                        String name = child.getName();
-                        if (matchNodePath(name)) {
-                            recursiveVisit(child.getPath());
-                        }
-                    } catch (InvalidItemStateException e) {
-                        log.warn("InvalidItemStateException while getting child node, the node will be skipped: "
-                                + e.getMessage());
-                    }
-                    level--;
+                final Node child = iter.nextNode();
+                if (child == null || ((HippoNode) child).isVirtual()) {
+                    continue;
                 }
+                level++;
+                try {
+                    String name = child.getName();
+                    if (matchNodePath(name)) {
+                        recursiveVisit(child.getPath());
+                    }
+                } catch (InvalidItemStateException e) {
+                    log.warn("InvalidItemStateException while getting child node, the node will be skipped: "
+                            + e.getMessage());
+                }
+                level--;
             }
         }
     }
@@ -224,28 +190,16 @@ public class Runner {
             return;
         }
         Session session = JcrHelper.getRootNode().getSession();
-
         QueryManager queryManager = session.getWorkspace().getQueryManager();
         Query jcrQuery = queryManager.createQuery(query, queryLanguage);
         QueryResult results = jcrQuery.execute();
-
-        List<String> nodeIds = new ArrayList<String>();
         NodeIterator resultsIter = results.getNodes();
-        while (resultsIter.hasNext()) {
-            final Node child = resultsIter.nextNode();
-            if (!isVirtual(child)) {
-                nodeIds.add(child.getIdentifier());
-            }
-        }
-
         boolean isFirst = true;
-        Iterator<String> nodeIdIter = nodeIds.iterator();
-        while (nodeIdIter.hasNext()) {
-            if (!keepRunning) {
-                break;
+        while (resultsIter.hasNext()) {
+            Node child = resultsIter.nextNode();
+            if (child == null || ((HippoNode) child).isVirtual()) {
+                continue;
             }
-            final String nodeId = nodeIdIter.next();
-            Node child = session.getNodeByIdentifier(nodeId);
             if (child != null) {
                 String childPath = child.getPath();
                 if (isFirst) {
@@ -254,7 +208,7 @@ public class Runner {
                     if (session.itemExists(childPath)) {
                         visit(child);
                     }
-                } else if (!nodeIdIter.hasNext()) {
+                } else if (!resultsIter.hasNext()) {
                     visit(child);
                     if (session.itemExists(childPath)) {
                         visitEnd(child);
@@ -351,9 +305,11 @@ public class Runner {
             switch (pluginConfig.getType()) {
             case JAVA:
                 runnerPlugin = RunnerPluginFactory.createJavaPlugin(pluginConfig);
+                log.info("Registering java plugin {}.", pluginConfig.getId());
                 break;
             case BEANSHELL:
                 runnerPlugin = RunnerPluginFactory.createBeanShellPlugin(pluginConfig);
+                log.info("Registering beanshell plugin {}.", pluginConfig.getId());
                 break;
             default:
                 log.error("Unknown plugin of type {}", pluginConfig.getType());
