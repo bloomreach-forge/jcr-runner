@@ -226,7 +226,7 @@ public final class JcrHelper {
         return session;
     }
 
-    public static String getSavepath(Node node) {
+    public static String getSavePath(Node node) {
         try {
             return node.getPath();
         } catch (RepositoryException e) {
