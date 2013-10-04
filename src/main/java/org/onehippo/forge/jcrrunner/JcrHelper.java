@@ -147,7 +147,7 @@ public final class JcrHelper {
         } catch (NotBoundException e) {
             log.error("Server not found in rmi lookup: " + getServer(), e);
         }
-        throw new IllegalArgumentException("No connection to repository.");
+        throw new IllegalStateException("No connection to repository.");
     }
 
     public static void refresh(final boolean keepChanges) {

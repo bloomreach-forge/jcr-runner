@@ -35,36 +35,214 @@ import org.slf4j.LoggerFactory;
 public class Runner {
 
     private static final Logger log = LoggerFactory.getLogger(Runner.class);
-    private String query;
-    private String queryLanguage;
-    private String startPath;
+
+    private static final String REPOSITORY_QUERY_LANGUAGE_DEFAULT = "xpath";
+
+    private List<RunnerPlugin> plugins = new ArrayList<RunnerPlugin>();
+    
+    // plugin state
+    private static final long MILLISECONDS_IN_SECOND = 1000L;
+    private long counter;
+    private long start;
     private List<String> pathElements;
     private int level = 0;
     private int wildcardLevel = -1;
-
+    private RunnerPlugin activePlugin;
     private volatile boolean keepRunning = true;
 
-    private List<RunnerPlugin> plugins = new ArrayList<RunnerPlugin>();
-
-    //-------------------------------- QUERY -----------------------------//
-    public void setQuery(String query) {
-        this.query = query;
+    //------------------------------- RUNNER LIFECYCLE -----------------------//
+    public Runner() {
     }
 
-    public void setQueryLanguage(String queryLanguage) {
-        this.queryLanguage = queryLanguage;
+    public void start() {
+        log.info("Runners starting.");
+        for (RunnerPlugin plugin : plugins) {
+            initPlugin(plugin);
+            runVisitor(plugin);
+            destroyPlugin(plugin);
+            JcrHelper.refresh(false);
+        }
+        log.info("Runners finished.");
+    }
+
+    public void stop() {
+        log.debug("Interrupt intercepted. Stopping runner.");
+        keepRunning = false;
+        if (activePlugin != null) {
+            destroyPlugin(activePlugin);
+        }
+        log.info("Runner stopped.");
+    }
+
+    //------------------------------- VISITOR ------------------------?
+    private void recursiveVisit(RunnerPlugin plugin, String path) throws RepositoryException {
+        Node node;
+        try {
+            node = JcrHelper.getNode(path);
+        } catch (PathNotFoundException e) {
+            log.info("Path not found: " + path);
+            return;
+        }
+        counter++;
+        plugin.visit(node);
+        JcrHelper.refresh(true);
+        try {
+            node = JcrHelper.getNode(path);
+        } catch (PathNotFoundException e) {
+            log.info("Path not found: " + path);
+            return;
+        }
+        if (node.hasNodes()) {
+            NodeIterator iter = node.getNodes();
+            while (iter.hasNext()) {
+                if (!keepRunning) {
+                    break;
+                }
+                final Node child = iter.nextNode();
+                if (child == null || JcrHelper.isVirtual(child)) {
+                    continue;
+                }
+                level++;
+                try {
+                    String name = child.getName();
+                    if (matchNodePath(name)) {
+                        recursiveVisit(plugin, child.getPath());
+                    }
+                } catch (InvalidItemStateException e) {
+                    log.warn("InvalidItemStateException while getting child node, the node will be skipped: "
+                            + e.getMessage());
+                }
+                level--;
+            }
+        }
+    }
+
+    private void runPathVisitor(RunnerPlugin plugin) throws RepositoryException {
+
+        String path = plugin.getConfigValue("path");
+
+        if (path == null || path.length() == 0) {
+            log.info("{}: No path set. Skipping path visitor.", plugin.getId());
+            return;
+        }
+        // TODO: JcrHelper.pathExists()?
+        String startPath = getStartPath(path);
+        Node startNode = JcrHelper.getNode(startPath);
+        recursiveVisit(plugin, startNode.getPath());
+
+    }
+
+    private void runQueryVisitor(RunnerPlugin plugin) throws RepositoryException {
+        if (plugin.getConfigValue("query") == null) {
+            log.info("{}: No query set. Skipping query visitor.", plugin.getId());
+            return;
+        }
+
+        Session session = JcrHelper.getSession();
+        QueryManager queryManager = session.getWorkspace().getQueryManager();
+        Query jcrQuery = queryManager.createQuery(plugin.getConfigValue("query"),
+                plugin.getConfigValue("query.language", REPOSITORY_QUERY_LANGUAGE_DEFAULT));
+        QueryResult results = jcrQuery.execute();
+        NodeIterator resultsIter = results.getNodes();
+
+        while (resultsIter.hasNext()) {
+            Node child = resultsIter.nextNode();
+            if (child == null || JcrHelper.isVirtual(child)) {
+                continue;
+            }
+            String childPath = child.getPath();
+            if (JcrHelper.getSession().itemExists(childPath)) {
+                counter++;
+                plugin.visit(child);
+            }
+            // XXX: is this still needed?
+            JcrHelper.refresh(true);
+        }
+    }
+
+    //------------------------------- PLUGIN LIFECYCLE -----------------------//
+    public void registerPlugins(List<RunnerPluginConfig> pluginConfigs) {
+        RunnerPlugin runnerPlugin = null;
+        for (RunnerPluginConfig pluginConfig : pluginConfigs) {
+            switch (pluginConfig.getType()) {
+            case JAVA:
+                runnerPlugin = RunnerPluginFactory.createJavaPlugin(pluginConfig);
+                log.info("Registering java plugin {}.", pluginConfig.getId());
+                break;
+            case BEANSHELL:
+                runnerPlugin = RunnerPluginFactory.createBeanShellPlugin(pluginConfig);
+                log.info("Registering beanshell plugin {}.", pluginConfig.getId());
+                break;
+            default:
+                log.error("Unknown plugin of type {}", pluginConfig.getType());
+            }
+            if (runnerPlugin != null) {
+                registerPlugin(runnerPlugin);
+            }
+        }
+    }
+
+    public void registerPlugin(RunnerPlugin plugin) {
+        log.debug(plugin.getId() + ": Registering plugin: " + plugin.getClass().getName());
+        plugins.add(plugin);
+    }
+
+    public void initPlugin(RunnerPlugin plugin) {
+        keepRunning = true;
+        activePlugin = plugin;
+        start = System.currentTimeMillis();
+        counter = 0;
+        log.info("{}: Initializing plugin class: {}", plugin.getId(), plugin.getClass().getName());
+        plugin.init(JcrHelper.getSession());
+    }
+
+    public void runVisitor(RunnerPlugin plugin) {
+        try {
+            runPathVisitor(plugin);
+        } catch (RepositoryException e) {
+            log.error(plugin.getId() + ": Error while trying to run path visitor for " + plugin.getId(), e);
+        } catch (RunnerStopException e) {
+            log.info(plugin.getId() + ": Path visitor stopped: {}", e.getMessage());
+        }
+        try {
+            runQueryVisitor(plugin);
+        } catch (RepositoryException e) {
+            log.error(plugin.getId() + ": Error while trying to run query visitor for " + plugin.getId(), e);
+        } catch (RunnerStopException e) {
+            log.info(plugin.getId() + ": Query visitor stopped: {}", e.getMessage());
+        }
+    }
+
+    public void destroyPlugin(RunnerPlugin plugin) {
+        keepRunning = false;
+        activePlugin = null;
+        plugin.destroy(JcrHelper.getSession());
+        long duration = (System.currentTimeMillis() - start) / MILLISECONDS_IN_SECOND;
+        log.info(plugin.getId() + ": Visited " + counter + " nodes in " + duration + " seconds.");
+        log.info("{}: Destroying plugin class: {}", plugin.getId(), plugin.getClass().getName());
     }
 
     //-------------------------------- PATH PARSING -----------------------------//
-    public void setPath(String path) throws RepositoryException {
-        if (path == null || path.length() == 0) {
-            return;
-        }
+    public String getStartPath(String path) throws RepositoryException {
+        //        if (path == null || path.length() == 0) {
+        //            return;
+        //        }
         String absPath = makePathAbsolute(path);
-        startPath = findStartPath(absPath);
+        String startPath = findStartPath(absPath);
         pathElements = Arrays.asList(absPath.substring(1).split("/"));
         level = startPath.split("/").length - 2;
         wildcardLevel = pathElements.indexOf("**");
+        return startPath;
+    }
+
+    private String makePathAbsolute(String path) {
+        if (path == null || path.length() == 0) {
+            return "/";
+        } else if (!path.startsWith("/")) {
+            return "/" + path;
+        } else {
+            return path;
+        }
     }
 
     private String findStartPath(String absPath) {
@@ -80,16 +258,6 @@ public class Runner {
             beginPath = beginPath.substring(0, pos);
         }
         return beginPath;
-    }
-
-    private String makePathAbsolute(String path) {
-        if (path == null || path.length() == 0) {
-            return "/";
-        } else if (!path.startsWith("/")) {
-            return "/" + path;
-        } else {
-            return path;
-        }
     }
 
     /**
@@ -124,169 +292,6 @@ public class Runner {
             }
         }
         return false;
-    }
-
-    //------------------------------- VISITOR ------------------------?
-    private void recursiveVisit(String path) throws RepositoryException {
-        Node node;
-        try {
-            node = JcrHelper.getNode(path);
-        } catch (PathNotFoundException e) {
-            log.info("Path not found: " + path);
-            return;
-        }
-        visit(node);
-        JcrHelper.refresh(true);
-        try {
-            node = JcrHelper.getNode(path);
-        } catch (PathNotFoundException e) {
-            log.info("Path not found: " + path);
-            return;
-        }
-        if (node.hasNodes()) {
-            NodeIterator iter = node.getNodes();
-            while (iter.hasNext()) {
-                if (!keepRunning) {
-                    break;
-                }
-                final Node child = iter.nextNode();
-                if (child == null || JcrHelper.isVirtual(child)) {
-                    continue;
-                }
-                level++;
-                try {
-                    String name = child.getName();
-                    if (matchNodePath(name)) {
-                        recursiveVisit(child.getPath());
-                    }
-                } catch (InvalidItemStateException e) {
-                    log.warn("InvalidItemStateException while getting child node, the node will be skipped: "
-                            + e.getMessage());
-                }
-                level--;
-            }
-        }
-    }
-
-    private void runPathVisitor() throws RepositoryException {
-        if (startPath == null) {
-            log.info("No path set. Skipping path visitor.");
-            return;
-        }
-        Node root = JcrHelper.getNode(startPath);
-        String rootPath = root.getPath();
-        recursiveVisit(rootPath);
-        if (keepRunning) {
-            JcrHelper.refresh(true);
-        }
-    }
-
-    private void runQueryVisitor() throws RepositoryException {
-        if (query == null) {
-            log.info("No query set. Skipping query visitor.");
-            return;
-        }
-
-        Session session = JcrHelper.getSession();
-        QueryManager queryManager = session.getWorkspace().getQueryManager();
-        Query jcrQuery = queryManager.createQuery(query, queryLanguage);
-        QueryResult results = jcrQuery.execute();
-        NodeIterator resultsIter = results.getNodes();
-
-        while (resultsIter.hasNext()) {
-            Node child = resultsIter.nextNode();
-            if (child == null || JcrHelper.isVirtual(child)) {
-                continue;
-            }
-            String childPath = child.getPath();
-            if (session.itemExists(childPath)) {
-                visit(child);
-            }
-            JcrHelper.refresh(true);
-        }
-    }
-
-    //------------------------------- LIFECYCLE -----------------------//
-    public Runner() {
-    }
-
-    public void start() {
-        log.info("Runner starting.");
-        initPlugins();
-        keepRunning = true;
-        try {
-            runPathVisitor();
-            runQueryVisitor();
-        } catch (PathNotFoundException e) {
-            log.error("Path not found: " + startPath);
-            destroyPlugins();
-        } catch (RepositoryException e) {
-            log.error("Error while running the plugins", e);
-            destroyPlugins();
-        }
-        log.info("Runner finished.");
-    }
-
-    public void stop() {
-        log.debug("Runner stopping.");
-        keepRunning = false;
-        destroyPlugins();
-        log.info("Runner stopped.");
-    }
-
-    // ------------------------------- PLUGIN INTERFACES -----------------//
-    private void visit(Node node) {
-        synchronized (plugins) {
-            for (RunnerPlugin plugin : plugins) {
-                plugin.visit(node);
-            }
-        }
-    }
-
-    public void registerPlugin(RunnerPlugin plugin) {
-        synchronized (plugins) {
-            log.debug("Registering plugin: " + plugin.getClass().getName());
-            plugins.add(plugin);
-        }
-    }
-
-    public void initPlugins() {
-        synchronized (plugins) {
-            for (RunnerPlugin plugin : plugins) {
-                log.info("Initializing plugin: " + plugin.getClass().getName());
-                plugin.init(JcrHelper.getSession());
-            }
-        }
-    }
-
-    public void destroyPlugins() {
-        synchronized (plugins) {
-            for (RunnerPlugin plugin : plugins) {
-                log.info("Destroying plugin: " + plugin.getClass().getName());
-                plugin.destroy(JcrHelper.getSession());
-            }
-        }
-    }
-
-    public void registerPlugins(List<RunnerPluginConfig> pluginConfigs) {
-        RunnerPlugin runnerPlugin = null;
-        for (RunnerPluginConfig pluginConfig : pluginConfigs) {
-            switch (pluginConfig.getType()) {
-            case JAVA:
-                runnerPlugin = RunnerPluginFactory.createJavaPlugin(pluginConfig);
-                log.info("Registering java plugin {}.", pluginConfig.getId());
-                break;
-            case BEANSHELL:
-                runnerPlugin = RunnerPluginFactory.createBeanShellPlugin(pluginConfig);
-                log.info("Registering beanshell plugin {}.", pluginConfig.getId());
-                break;
-            default:
-                log.error("Unknown plugin of type {}", pluginConfig.getType());
-            }
-            if (runnerPlugin != null) {
-                registerPlugin(runnerPlugin);
-            }
-        }
     }
 
 }

@@ -29,29 +29,23 @@ public class LoggingPlugin extends AbstractRunnerPlugin {
 
     private static Logger log = LoggerFactory.getLogger(LoggingPlugin.class);
 
-    private static final long MILLISECONDS_IN_SECOND = 1000L;
-    private long counter;
-    private long start;
+
+
+    @Override
+    public void init(Session session) {
+    }
 
     @Override
     public void visit(Node node) {
         try {
             log.info("Visiting node {}", node.getPath());
-            counter++;
         } catch (RepositoryException e) {
             log.error("Error getting node path", e);
         }
     }
 
     @Override
-    public void init(Session session) {
-        start = System.currentTimeMillis();
-    }
-
-    @Override
     public void destroy(Session session) {
-        long duration = (System.currentTimeMillis() - start) / MILLISECONDS_IN_SECOND;
-        log.info("Visited " + counter + " nodes in " + duration + " seconds.");
     }
 
 }

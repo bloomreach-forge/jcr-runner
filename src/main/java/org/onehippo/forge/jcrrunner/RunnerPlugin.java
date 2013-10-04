@@ -28,7 +28,6 @@ public interface RunnerPlugin {
      * Get the id of the plugin
      */
     String getId();
-    
 
     /**
      * Get the id of the plugin
@@ -39,7 +38,6 @@ public interface RunnerPlugin {
      * Get the name of the plugin
      */
     void setConfig(RunnerPluginConfig config);
-    
 
     /**
      * Get a value from the embedded {@link RunnerPluginConfig}
@@ -47,7 +45,15 @@ public interface RunnerPlugin {
      * @return the String value
      */
     String getConfigValue(String key);
-    
+
+    /**
+     * Get a value from the embedded {@link RunnerPluginConfig}
+     * @param key the name of the key
+     * @param the default value
+     * @return the String value or the default value if the key is not set
+     */
+    String getConfigValue(String key, String defaultValue);
+
     /**
      * Initialization hook
      * @param session The jcr session
@@ -59,7 +65,7 @@ public interface RunnerPlugin {
      * @param session The jcr session
      */
     void destroy(Session session);
-    
+
     /**
      * Called when visiting the node
      * @param node The current JCR node to visit

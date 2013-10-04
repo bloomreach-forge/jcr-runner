@@ -15,11 +15,6 @@
  */
 package org.onehippo.forge.jcrrunner;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.jcr.PathNotFoundException;
-import javax.jcr.RepositoryException;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,8 +25,6 @@ import java.util.Properties;
  * Main wrapper to start the runner.
  */
 public final class JcrRunner {
-
-    private static final Logger log = LoggerFactory.getLogger(JcrRunner.class);
 
     private static Runner runner = null;
 
@@ -53,21 +46,12 @@ public final class JcrRunner {
         JcrHelper.setServerUrl(config.getRepositoryUrl());
         JcrHelper.setUsername(config.getRepositoryUser());
         JcrHelper.setPassword(config.getRepositoryPass());
-        JcrHelper.ensureConnected();
 
-        try {
-            // start the runner
-            runner = new Runner();
-            runner.registerPlugins(config.getPluginConfigs());
-            runner.setPath(config.getRepositoryPath());
-            runner.setQueryLanguage(config.getRepositoryQueryLanguage());
-            runner.setQuery(config.getRepositoryQuery());
-            runner.start();
-        } catch (PathNotFoundException e) {
-            log.error("Configured start path not found: " + e.getMessage());
-        } catch (RepositoryException e) {
-            log.error("Error while trying to set start path: " + config.getRepositoryPath(), e);
-        }
+        // start the runner
+        runner = new Runner();
+        runner.registerPlugins(config.getPluginConfigs());
+        JcrHelper.ensureConnected();
+        runner.start();
         JcrHelper.disconnect();
     }
 

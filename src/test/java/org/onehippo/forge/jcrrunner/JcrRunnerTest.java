@@ -32,7 +32,6 @@ public class JcrRunnerTest {
         assertEquals("admin", runnerConfig.getRepositoryUser());
         assertEquals("admin", runnerConfig.getRepositoryPass());
         assertEquals("rmi://127.0.0.1:1099/hipporepository", runnerConfig.getRepositoryUrl());
-        assertEquals("/content/documents/**", runnerConfig.getRepositoryPath());
     }
 
     @Test
@@ -42,7 +41,6 @@ public class JcrRunnerTest {
         assertEquals("testuser", runnerConfig.getRepositoryUser());
         assertEquals("testpass", runnerConfig.getRepositoryPass());
         assertEquals("rmi://127.0.0.1:1099/hipporepository", runnerConfig.getRepositoryUrl());
-        assertEquals("/content/documents/**", runnerConfig.getRepositoryPath());
     }
 
     @Test
@@ -52,6 +50,5 @@ public class JcrRunnerTest {
         assertEquals("testuser", runnerConfig.getRepositoryUser());
         assertEquals("testpass", runnerConfig.getRepositoryPass());
         assertEquals("rmi://127.0.0.1:1099/hipporepository", runnerConfig.getRepositoryUrl());
-        assertEquals("/content/documents/**", runnerConfig.getRepositoryPath());
     }
 }

@@ -17,8 +17,6 @@ package org.onehippo.forge.jcrrunner.plugins;
 
 import org.onehippo.forge.jcrrunner.RunnerPlugin;
 import org.onehippo.forge.jcrrunner.RunnerPluginConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class AbstractRunnerPlugin implements RunnerPlugin {
 
@@ -50,6 +48,14 @@ public abstract class AbstractRunnerPlugin implements RunnerPlugin {
 
     @Override
     public final String getConfigValue(String key) {
+        return config.getValue(key);
+    }
+
+    @Override
+    public final String getConfigValue(String key, String defaultValue) {
+        if (config.getValue(key) == null) {
+            return defaultValue;
+        }
         return config.getValue(key);
     }
 }
