@@ -58,4 +58,30 @@ public abstract class AbstractRunnerPlugin implements RunnerPlugin {
         }
         return config.getValue(key);
     }
+
+    @Override
+    public final long getLongConfigValue(String key, long defaultValue) {
+        final String value = getConfigValue(key);
+        if (value == null || "".equals(value)) {
+            return defaultValue;
+        }
+        try {
+            return Long.parseLong(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
+    @Override
+    public final int getIntConfigValue(String key, int defaultValue) {
+        final String value = getConfigValue(key);
+        if (value == null || "".equals(value)) {
+            return defaultValue;
+        }
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
 }

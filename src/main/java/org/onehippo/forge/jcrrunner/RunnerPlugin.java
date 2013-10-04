@@ -53,6 +53,22 @@ public interface RunnerPlugin {
      * @return the String value or the default value if the key is not set
      */
     String getConfigValue(String key, String defaultValue);
+    
+    /**
+     * Get an int value from the embedded {@link RunnerPluginConfig}
+     * @param key the name of the key
+     * @param the default value
+     * @return the String value or the default value if the key is not set
+     */
+    int getIntConfigValue(String key, int defaultValue);
+
+    /**
+     * Get a long value from the embedded {@link RunnerPluginConfig}
+     * @param key the name of the key
+     * @param the default value
+     * @return the String value or the default value if the key is not set
+     */
+    long getLongConfigValue(String key, long defaultValue);
 
     /**
      * Initialization hook
