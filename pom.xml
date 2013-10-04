@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.onehippo.cms7</groupId>
     <artifactId>hippo-cms7-project</artifactId>
-    <version>16</version>
+    <version>22.2</version>
   </parent>
 
   <name>Hippo JCR Runner</name>
@@ -81,13 +81,21 @@
     </repository>
   </distributionManagement>
 
-  <!-- versions -->
+  <prerequisites>
+    <maven>3.0</maven>
+  </prerequisites>
+
   <properties>
-    <org.hippoecm.version>2.18.02</org.hippoecm.version>
-    <javax.jcr.version>2.0</javax.jcr.version>
-    <org.slf4j.version>[1.5.0,1.5.99)</org.slf4j.version>
-    <log4j.version>[1.2.0,1.2.99)</log4j.version>
+    <!-- versions -->
+    <hippo.repository.version>2.24.09</hippo.repository.version>
+    <jackrabbit.version>2.2.13</jackrabbit.version>
+    <junit.version>4.11</junit.version>
+    <!-- version overrides -->
+    <slf4j.version>1.7.5</slf4j.version>
+    <log4j.version>1.2.17</log4j.version>
+    <!-- build properties -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.build.javaVersion>1.6</project.build.javaVersion>
   </properties>
 
   <repositories>
@@ -118,15 +126,17 @@
   </pluginRepositories>
 
   <dependencies>
+
     <dependency>
       <groupId>javax.jcr</groupId>
       <artifactId>jcr</artifactId>
-      <version>${javax.jcr.version}</version>
+      <scope>compile</scope>
     </dependency>
+
     <dependency>
       <groupId>org.onehippo.cms7</groupId>
       <artifactId>hippo-repository-api</artifactId>
-      <version>${org.hippoecm.version}</version>
+      <version>${hippo.repository.version}</version>
       <exclusions>
         <exclusion>
           <groupId>javax.jdo</groupId>
@@ -141,7 +151,7 @@
     <dependency>
       <groupId>org.onehippo.cms7</groupId>
       <artifactId>hippo-repository-connector</artifactId>
-      <version>${org.hippoecm.version}</version>
+      <version>${hippo.repository.version}</version>
       <exclusions>
         <exclusion>
           <groupId>javax.jdo</groupId>
@@ -161,35 +171,42 @@
         </exclusion>
       </exclusions>
     </dependency>
+
     <dependency>
       <groupId>org.apache.jackrabbit</groupId>
       <artifactId>jackrabbit-jcr-commons</artifactId>
-      <version>2.2.9</version>
+      <version>${jackrabbit.version}</version>
     </dependency>
+
     <dependency>
       <groupId>org.beanshell</groupId>
       <artifactId>bsh</artifactId>
-      <version>2.0b4</version>
+      <version>2.0b5</version>
     </dependency>
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>${org.slf4j.version}</version>
+      <version>${slf4j.version}</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
-      <version>${org.slf4j.version}</version>
+      <version>${slf4j.version}</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
-      <version>${org.slf4j.version}</version>
+      <version>${slf4j.version}</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>${log4j.version}</version>
+      <scope>compile</scope>
       <exclusions>
         <exclusion>
           <groupId>com.sun.jmx</groupId>
@@ -209,10 +226,12 @@
         </exclusion>
       </exclusions>
     </dependency>
+
     <dependency>
       <groupId>org.apache.geronimo.specs</groupId>
       <artifactId>geronimo-jta_1.1_spec</artifactId>
       <version>1.1</version>
+      <scope>compile</scope>
       <exclusions>
         <exclusion>
           <groupId>geronimo-spec</groupId>
@@ -220,10 +239,12 @@
         </exclusion>
       </exclusions>
     </dependency>
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.10</version>
+      <version>${junit.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -232,7 +253,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>2.0.1</version>
+        <version>3.0</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -242,7 +263,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
-        <version>2.5</version>
+        <version>3.0.1</version>
         <configuration>
           <linkXref>true</linkXref>
           <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
@@ -252,7 +273,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
-        <version>2.3.2</version>
+        <version>2.5.2</version>
         <configuration>
           <xmlOutput>true</xmlOutput>
           <xdocsOutput>true</xdocsOutput>
@@ -267,18 +288,11 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.8</version>
+        <version>2.9.1</version>
         <configuration>
           <encoding>${project.build.sourceEncoding}</encoding>
         </configuration>
       </plugin>
-      <!-- disable for now until there's a good checkstyle configuration
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.3</version>
-      </plugin>
-      -->
     </plugins>
   </reporting>
 
@@ -298,17 +312,13 @@
         </executions>
         <configuration>
           <mainClass>org.onehippo.forge.jcrrunner.JcrRunner</mainClass>
-          <!--
-           enable if you want to query:
-          <mainClass>org.onehippo.forge.jcrrunner.JcrQueryRunner</mainClass>
-          -->
           <cleanupDeamonThreads>false</cleanupDeamonThreads>
         </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>appassembler-maven-plugin</artifactId>
-        <version>1.1.1</version>
+        <version>1.5</version>
         <configuration>
           <extraJvmArguments>-Xmx128m</extraJvmArguments>
           <assembleDirectory>${project.build.directory}/jcr-runner</assembleDirectory>
@@ -319,10 +329,6 @@
           <programs>
             <program>
               <mainClass>org.onehippo.forge.jcrrunner.JcrRunner</mainClass>
-              <!--
-               enable if you want to query:
-              <mainClass>org.onehippo.forge.jcrrunner.JcrQueryRunner</mainClass>
-              -->
               <name>jcr-runner</name>
             </program>
           </programs>
@@ -330,8 +336,22 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>2.5</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>${project.build.javaVersion}</source>
+          <target>${project.build.javaVersion}</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>2.2.1</version>
+        <version>2.4.1</version>
         <configuration>
           <tagBase>https://forge.onehippo.org/svn/jcr-runner/tags</tagBase>
         </configuration>
@@ -350,7 +370,7 @@
           <inherited>true</inherited>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
-          <version>3.0</version>
+          <version>3.3</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -372,6 +392,7 @@
             <groupId>org.apache.rat</groupId>
             <artifactId>apache-rat-plugin</artifactId>
             <inherited>false</inherited>
+            <version>0.10</version>
           </plugin>
         </plugins>
       </build>
