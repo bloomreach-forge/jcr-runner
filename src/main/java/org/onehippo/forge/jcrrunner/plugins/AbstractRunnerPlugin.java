@@ -15,9 +15,6 @@
  */
 package org.onehippo.forge.jcrrunner.plugins;
 
-import javax.jcr.Node;
-import javax.jcr.RepositoryException;
-
 import org.onehippo.forge.jcrrunner.RunnerPlugin;
 import org.onehippo.forge.jcrrunner.RunnerPluginConfig;
 import org.slf4j.Logger;
@@ -25,86 +22,34 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractRunnerPlugin implements RunnerPlugin {
 
-    private static final Logger log = LoggerFactory.getLogger(AbstractRunnerPlugin.class);
-
     /**
      * Holder for the current plugin id
      */
     private String id;
-
+    
     /**
      * Holder for the current plugin's config
      */
     private RunnerPluginConfig config;
 
-    /**
-     * {@inheritDoc}
-     */
-    public abstract void visit(Node node);
 
-    /**
-     * {@inheritDoc}
-     */
-    public void init() {
-        getLogger().info("Starting plugin " + getId());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void destroy() {
-        getLogger().info("Stopping plugin " + getId());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void visitStart(Node node) {
-        try {
-            getLogger().info("VisitStart node {}", node.getPath());
-        } catch (RepositoryException e) {
-            getLogger().error("Error getting node path", e);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void visitEnd(Node node) {
-        try {
-            getLogger().info("VisitEnd node {}", node.getPath());
-        } catch (RepositoryException e) {
-            getLogger().error("Error getting node path", e);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public final void setId(String id) {
-        this.id = id;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public final String getId() {
         return id;
     }
 
-    /**
-     * Get the static logger instance.
-     * @return the {@link Logger}
-     */
-    protected final Logger getLogger() {
-        return log;
+    @Override
+    public final void setId(String id) {
+        this.id = id;
     }
 
+    @Override
     public final void setConfig(RunnerPluginConfig config) {
         this.config = config;
     }
 
-    public String getConfigValue(String key) {
+    @Override
+    public final String getConfigValue(String key) {
         return config.getValue(key);
     }
 }

@@ -65,18 +65,6 @@ public final class JcrHelper {
         return isHippoRepository;
     }
 
-    public static boolean isConnected() {
-        try {
-            if (session != null && session.isLive()) {
-                return true;
-            }
-        } catch (RemoteRuntimeException e) {
-            log.error("Error communicating with server. ", e);
-            setConnected(false);
-        }
-        return connected;
-    }
-
     public static void setConnected(final boolean connected) {
         JcrHelper.connected = connected;
     }
@@ -105,6 +93,18 @@ public final class JcrHelper {
         JcrHelper.username = username;
     }
 
+    public static boolean isConnected() {
+        try {
+            if (session != null && session.isLive()) {
+                return true;
+            }
+        } catch (RemoteRuntimeException e) {
+            log.error("Error communicating with server. ", e);
+            setConnected(false);
+        }
+        return connected;
+    }
+
     public static String getStatus() {
         if (!isConnected()) {
             return username + "@" + server + " connected: " + connected;
@@ -113,7 +113,7 @@ public final class JcrHelper {
         }
     }
 
-    public static boolean connect() {
+    public static boolean ensureConnected() {
         if (isConnected()) {
             return true;
         }
@@ -147,21 +147,21 @@ public final class JcrHelper {
         } catch (NotBoundException e) {
             log.error("Server not found in rmi lookup: " + getServer(), e);
         }
-        return false;
+        throw new IllegalArgumentException("No connection to repository.");
     }
 
     public static void refresh(final boolean keepChanges) {
-        if (connect()) {
-            try {
-                session.refresh(keepChanges);
-            } catch (RepositoryException e) {
-                log.error("Error while refresing the session.", e);
-            }
+        ensureConnected();
+        try {
+            session.refresh(keepChanges);
+        } catch (RepositoryException e) {
+            log.error("Error while refresing the session.", e);
         }
     }
 
     public static boolean login() {
-        return connect();
+        ensureConnected();
+        return isConnected();
     }
 
     public static void disconnect() {
@@ -174,31 +174,26 @@ public final class JcrHelper {
     }
 
     public static boolean save() {
-        if (connect()) {
-            try {
-                session.save();
-                return true;
-            } catch (RepositoryException e) {
-                log.error("Error while saving the session.", e);
-            }
+        ensureConnected();
+        try {
+            session.save();
+            return true;
+        } catch (RepositoryException e) {
+            log.error("Error while saving the session.", e);
+            return false;
         }
-        return false;
     }
 
     public static boolean isVirtual(Node jcrNode) {
+        ensureConnected();
         if (jcrNode == null) {
             return false;
         }
         if (!isHippoRepository()) {
             return false;
         }
-        HippoNode hippoNode = (HippoNode) jcrNode;
         try {
-            Node canonical = hippoNode.getCanonicalNode();
-            if (canonical == null) {
-                return true;
-            }
-            return !hippoNode.getCanonicalNode().isSame(hippoNode);
+            return ((HippoNode) jcrNode).isVirtual();
         } catch (RepositoryException e) {
             log.error("Error while determining if the node is virtual", e);
             return false;
@@ -206,9 +201,7 @@ public final class JcrHelper {
     }
 
     public static Node getNode(final String path) throws RepositoryException {
-        if (!connect()) {
-            return null;
-        }
+        ensureConnected();
         if (path == null) {
             throw new IllegalArgumentException("Path can not be null");
         }
@@ -224,7 +217,13 @@ public final class JcrHelper {
     }
 
     public static Node getRootNode() throws RepositoryException {
+        ensureConnected();
         return session.getRootNode();
+    }
+
+    public static Session getSession() {
+        ensureConnected();
+        return session;
     }
 
 }

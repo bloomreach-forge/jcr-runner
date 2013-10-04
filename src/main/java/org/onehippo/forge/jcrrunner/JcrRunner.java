@@ -53,7 +53,7 @@ public final class JcrRunner {
         JcrHelper.setServerUrl(config.getRepositoryUrl());
         JcrHelper.setUsername(config.getRepositoryUser());
         JcrHelper.setPassword(config.getRepositoryPass());
-        JcrHelper.connect();
+        JcrHelper.ensureConnected();
 
         try {
             // start the runner

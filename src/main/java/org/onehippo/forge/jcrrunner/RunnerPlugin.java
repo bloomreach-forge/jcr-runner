@@ -16,6 +16,7 @@
 package org.onehippo.forge.jcrrunner;
 
 import javax.jcr.Node;
+import javax.jcr.Session;
 
 /**
  * All RunnerPlugins must implement this interface directly or
@@ -49,29 +50,19 @@ public interface RunnerPlugin {
     
     /**
      * Initialization hook
+     * @param session The jcr session
      */
-    void init();
+    void init(Session session);
 
     /**
      * Shutdown hook
+     * @param session The jcr session
      */
-    void destroy();
+    void destroy(Session session);
     
     /**
      * Called when visiting the node
      * @param node The current JCR node to visit
      */
     void visit(Node node);
-    
-    /**
-     * Called before starting the visiting. 
-     * @param node The root node of the traversing tree
-     */
-    void visitStart(Node node);
-    
-    /**
-     * Called after the visiting.
-     * @param node The root node of the traversing tree
-     */
-    void visitEnd(Node node);
 }

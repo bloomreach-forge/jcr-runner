@@ -18,6 +18,10 @@ package org.onehippo.forge.jcrrunner.plugins;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -25,28 +29,24 @@ import javax.jcr.RepositoryException;
  */
 public class FolderConverterPlugin extends AbstractRunnerPlugin {
 
+    private static Logger log = LoggerFactory.getLogger(FolderConverterPlugin.class);
+
     private static final String OLD_TYPE = "hippostd:directory";
     private static final String NEW_TYPE = "hippostd:folder";
     private static final String TMP_NAME = "tmptmptmptmp";
 
-    /**
-     * Get the name of the pllugin
-     * @return the plugin name
-     */
-    public String getName() {
-        return "Folder converter plugin";
+
+    @Override
+    public void init(Session session) {
     }
-    
-    /**
-     * {@inheritDoc}
-     */
+
     public void visit(Node node) {
         try {
-            getLogger().debug("Visit node {}", node.getPath());
+            log.debug("Visit node {}", node.getPath());
             if (!node.getPrimaryNodeType().getName().equals(OLD_TYPE)) {
                 return;
             }
-            getLogger().info("Found folder of type {} : {}", OLD_TYPE, node.getPath());
+            log.info("Found folder of type {} : {}", OLD_TYPE, node.getPath());
 
             Node parent = node.getParent();
             Node newNode = createTmpNode(parent);
@@ -66,12 +66,16 @@ public class FolderConverterPlugin extends AbstractRunnerPlugin {
             // rename tmp
             parent.getSession().move(newNode.getPath(), path);
             
-            node.save();
+            node.getSession().save();
 
-            getLogger().info("Changed folder " + path + " from type " + OLD_TYPE + " to type " + NEW_TYPE);
+            log.info("Changed folder " + path + " from type " + OLD_TYPE + " to type " + NEW_TYPE);
         } catch (RepositoryException e) {
-            getLogger().error("Error getting node path", e);
+            log.error("Error getting node path", e);
         }
+    }
+
+    @Override
+    public void destroy(Session session) {
     }
 
     private Node createTmpNode(Node parent) throws RepositoryException {
@@ -80,4 +84,6 @@ public class FolderConverterPlugin extends AbstractRunnerPlugin {
         node.setProperty("hippostd:foldertype", new String[] {"New Folder Text", "New Text"});
         return node;
     }
+
+
 }

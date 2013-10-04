@@ -17,42 +17,41 @@ package org.onehippo.forge.jcrrunner.plugins;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Example {@link RunnerPlugin} implementation that just logs all calls.
  */
 public class LoggingPlugin extends AbstractRunnerPlugin {
 
+    private static Logger log = LoggerFactory.getLogger(LoggingPlugin.class);
+
     private static final long MILLISECONDS_IN_SECOND = 1000L;
     private long counter;
     private long start;
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void visit(Node node) {
         try {
-            getLogger().info("Visiting node {}", node.getPath());
+            log.info("Visiting node {}", node.getPath());
             counter++;
         } catch (RepositoryException e) {
-            getLogger().error("Error getting node path", e);
+            log.error("Error getting node path", e);
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void visitStart(Node node) {
+    @Override
+    public void init(Session session) {
         start = System.currentTimeMillis();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public void visitEnd(Node node) {
+    @Override
+    public void destroy(Session session) {
         long duration = (System.currentTimeMillis() - start) / MILLISECONDS_IN_SECOND;
-        getLogger().info("Visited " + counter + " nodes in " + duration + " seconds.");
+        log.info("Visited " + counter + " nodes in " + duration + " seconds.");
     }
 
 }

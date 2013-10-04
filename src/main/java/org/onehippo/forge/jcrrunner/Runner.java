@@ -29,7 +29,6 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 
-import org.hippoecm.repository.api.HippoNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,7 +150,7 @@ public class Runner {
                     break;
                 }
                 final Node child = iter.nextNode();
-                if (child == null || ((HippoNode) child).isVirtual()) {
+                if (child == null || JcrHelper.isVirtual(child)) {
                     continue;
                 }
                 level++;
@@ -176,11 +175,9 @@ public class Runner {
         }
         Node root = JcrHelper.getNode(startPath);
         String rootPath = root.getPath();
-        visitStart(root);
         recursiveVisit(rootPath);
         if (keepRunning) {
             JcrHelper.refresh(true);
-            visitEnd(JcrHelper.getNode(startPath));
         }
     }
 
@@ -189,35 +186,23 @@ public class Runner {
             log.info("No query set. Skipping query visitor.");
             return;
         }
-        Session session = JcrHelper.getRootNode().getSession();
+
+        Session session = JcrHelper.getSession();
         QueryManager queryManager = session.getWorkspace().getQueryManager();
         Query jcrQuery = queryManager.createQuery(query, queryLanguage);
         QueryResult results = jcrQuery.execute();
         NodeIterator resultsIter = results.getNodes();
-        boolean isFirst = true;
+
         while (resultsIter.hasNext()) {
             Node child = resultsIter.nextNode();
-            if (child == null || ((HippoNode) child).isVirtual()) {
+            if (child == null || JcrHelper.isVirtual(child)) {
                 continue;
             }
-            if (child != null) {
-                String childPath = child.getPath();
-                if (isFirst) {
-                    isFirst = false;
-                    visitStart(child);
-                    if (session.itemExists(childPath)) {
-                        visit(child);
-                    }
-                } else if (!resultsIter.hasNext()) {
-                    visit(child);
-                    if (session.itemExists(childPath)) {
-                        visitEnd(child);
-                    }
-                } else {
-                    visit(child);
-                }
-                JcrHelper.refresh(true);
+            String childPath = child.getPath();
+            if (session.itemExists(childPath)) {
+                visit(child);
             }
+            JcrHelper.refresh(true);
         }
     }
 
@@ -258,22 +243,6 @@ public class Runner {
         }
     }
 
-    private void visitStart(Node node) {
-        synchronized (plugins) {
-            for (RunnerPlugin plugin : plugins) {
-                plugin.visitStart(node);
-            }
-        }
-    }
-
-    private void visitEnd(Node node) {
-        synchronized (plugins) {
-            for (RunnerPlugin plugin : plugins) {
-                plugin.visitEnd(node);
-            }
-        }
-    }
-
     public void registerPlugin(RunnerPlugin plugin) {
         synchronized (plugins) {
             log.debug("Registering plugin: " + plugin.getClass().getName());
@@ -284,8 +253,8 @@ public class Runner {
     public void initPlugins() {
         synchronized (plugins) {
             for (RunnerPlugin plugin : plugins) {
-                log.debug("Initializing plugin: " + plugin.getClass().getName());
-                plugin.init();
+                log.info("Initializing plugin: " + plugin.getClass().getName());
+                plugin.init(JcrHelper.getSession());
             }
         }
     }
@@ -293,8 +262,8 @@ public class Runner {
     public void destroyPlugins() {
         synchronized (plugins) {
             for (RunnerPlugin plugin : plugins) {
-                log.debug("Destroying plugin: " + plugin.getClass().getName());
-                plugin.destroy();
+                log.info("Destroying plugin: " + plugin.getClass().getName());
+                plugin.destroy(JcrHelper.getSession());
             }
         }
     }
