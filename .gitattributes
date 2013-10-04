@@ -4,3 +4,5 @@ src/site/resources/images/icon_info_sml.gif -text
 src/site/resources/images/icon_warning_sml.gif -text
 src/site/resources/images/jcr-runner-small.png -text svneol=unset#image/png
 src/site/resources/images/jcr-runner.png -text svneol=unset#image/png
+src/test/resources/log4j.dtd -text svneol=unset#application/xml
+src/test/resources/log4j.xml svneol=native#text/xml
