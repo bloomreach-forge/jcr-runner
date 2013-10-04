@@ -226,4 +226,13 @@ public final class JcrHelper {
         return session;
     }
 
+    public static String getSavepath(Node node) {
+        try {
+            return node.getPath();
+        } catch (RepositoryException e) {
+            log.warn("Unable to get path from node", e);
+            return null;
+        }
+    }
+
 }
