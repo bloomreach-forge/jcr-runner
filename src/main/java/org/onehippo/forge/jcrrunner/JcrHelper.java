@@ -184,6 +184,16 @@ public final class JcrHelper {
         }
     }
 
+    public static boolean saveAndWait(long savePauseMillis) {
+        boolean saveResult = JcrHelper.save();
+        try { 
+            Thread.sleep(savePauseMillis); 
+        } catch (InterruptedException ignored) {
+            // ignore
+        }
+        return saveResult;
+    }
+
     public static boolean isVirtual(Node jcrNode) {
         ensureConnected();
         if (jcrNode == null) {

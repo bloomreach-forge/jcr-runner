@@ -39,7 +39,7 @@ public class Runner {
     private static final String REPOSITORY_QUERY_LANGUAGE_DEFAULT = "xpath";
 
     private List<RunnerPlugin> plugins = new ArrayList<RunnerPlugin>();
-    
+
     // plugin state
     private static final long MILLISECONDS_IN_SECOND = 1000L;
     private long counter;
@@ -118,30 +118,36 @@ public class Runner {
     }
 
     private void runPathVisitor(RunnerPlugin plugin) throws RepositoryException {
-
         String path = plugin.getConfigValue("path");
 
         if (path == null || path.length() == 0) {
             log.info("{}: No path set. Skipping path visitor.", plugin.getId());
             return;
         }
-        // TODO: JcrHelper.pathExists()?
-        String startPath = getStartPath(path);
-        Node startNode = JcrHelper.getNode(startPath);
-        recursiveVisit(plugin, startNode.getPath());
 
+        String startPath = getStartPath(path);
+        if (JcrHelper.getSession().itemExists(startPath)) {
+            log.info("{}: Using path '{}'", plugin.getId(), path);
+            recursiveVisit(plugin, startPath);
+        } else {
+            log.warn("{}: Path not found '{}'. Skipping path visitor.", plugin.getId(), startPath);
+        }
     }
 
     private void runQueryVisitor(RunnerPlugin plugin) throws RepositoryException {
-        if (plugin.getConfigValue("query") == null) {
+        String query = plugin.getConfigValue("query");
+        String language = plugin.getConfigValue("query.language", REPOSITORY_QUERY_LANGUAGE_DEFAULT);
+
+        if (query == null) {
             log.info("{}: No query set. Skipping query visitor.", plugin.getId());
             return;
         }
 
+        log.info("{}: Using query '{}', type '{}'", plugin.getId(), query, language);
+
         Session session = JcrHelper.getSession();
         QueryManager queryManager = session.getWorkspace().getQueryManager();
-        Query jcrQuery = queryManager.createQuery(plugin.getConfigValue("query"),
-                plugin.getConfigValue("query.language", REPOSITORY_QUERY_LANGUAGE_DEFAULT));
+        Query jcrQuery = queryManager.createQuery(query, language);
         QueryResult results = jcrQuery.execute();
         NodeIterator resultsIter = results.getNodes();
 
