@@ -67,7 +67,6 @@ public class Runner {
 
     public void stop() {
         log.debug("Interrupt intercepted. Stopping runner.");
-        keepRunning = false;
         if (activePlugin != null) {
             destroyPlugin(activePlugin);
         }
@@ -85,48 +84,42 @@ public class Runner {
         }
         counter++;
         plugin.visit(node);
-        JcrHelper.refresh(true);
-        try {
-            node = JcrHelper.getNode(path);
-        } catch (PathNotFoundException e) {
-            log.info("Path not found: " + path);
-            return;
-        }
+
         if (node.hasNodes()) {
             NodeIterator iter = node.getNodes();
-            while (iter.hasNext()) {
-                if (!keepRunning) {
-                    break;
-                }
+            while (keepRunning && iter.hasNext()) {
                 final Node child = iter.nextNode();
-                if (child == null || JcrHelper.isVirtual(child)) {
-                    continue;
-                }
-                level++;
-                try {
-                    String name = child.getName();
-                    if (matchNodePath(name)) {
-                        recursiveVisit(plugin, child.getPath());
+                if (child != null && !JcrHelper.isVirtual(child)) {
+                    level++;
+                    try {
+                        String name = child.getName();
+                        if (matchNodePath(name)) {
+                            recursiveVisit(plugin, child.getPath());
+                        }
+                    } catch (InvalidItemStateException e) {
+                        log.warn("InvalidItemStateException while getting child node, the node will be skipped: "
+                                + e.getMessage());
                     }
-                } catch (InvalidItemStateException e) {
-                    log.warn("InvalidItemStateException while getting child node, the node will be skipped: "
-                            + e.getMessage());
+                    level--;
                 }
-                level--;
             }
         }
     }
 
     private void runPathVisitor(RunnerPlugin plugin) throws RepositoryException {
         String path = plugin.getConfigValue("path");
-
         if (path == null || path.length() == 0) {
             log.info("{}: No path set. Skipping path visitor.", plugin.getId());
             return;
         }
 
-        String startPath = getStartPath(path);
-        if (JcrHelper.getSession().itemExists(startPath)) {
+        String absPath = makePathAbsolute(path);
+        String startPath = findStartPath(absPath);
+        pathElements = Arrays.asList(absPath.substring(1).split("/"));
+        level = startPath.split("/").length - 2;
+        wildcardLevel = pathElements.indexOf("**");
+        
+        if (JcrHelper.safeItemExists(startPath)) {
             log.info("{}: Using path '{}'", plugin.getId(), path);
             recursiveVisit(plugin, startPath);
         } else {
@@ -137,7 +130,6 @@ public class Runner {
     private void runQueryVisitor(RunnerPlugin plugin) throws RepositoryException {
         String query = plugin.getConfigValue("query");
         String language = plugin.getConfigValue("query.language", REPOSITORY_QUERY_LANGUAGE_DEFAULT);
-
         if (query == null) {
             log.info("{}: No query set. Skipping query visitor.", plugin.getId());
             return;
@@ -151,18 +143,16 @@ public class Runner {
         QueryResult results = jcrQuery.execute();
         NodeIterator resultsIter = results.getNodes();
 
-        while (resultsIter.hasNext()) {
+        while (keepRunning && resultsIter.hasNext()) {
             Node child = resultsIter.nextNode();
-            if (child == null || JcrHelper.isVirtual(child)) {
-                continue;
+            if (child != null && !JcrHelper.isVirtual(child)) {
+                // make sure the node is valid and exists
+                String childPath = JcrHelper.safeGetPath(child);
+                if (JcrHelper.safeItemExists(childPath)) {
+                    counter++;
+                    plugin.visit(child);
+                }
             }
-            String childPath = child.getPath();
-            if (JcrHelper.getSession().itemExists(childPath)) {
-                counter++;
-                plugin.visit(child);
-            }
-            // XXX: is this still needed?
-            JcrHelper.refresh(true);
         }
     }
 
@@ -229,18 +219,6 @@ public class Runner {
     }
 
     //-------------------------------- PATH PARSING -----------------------------//
-    public String getStartPath(String path) throws RepositoryException {
-        //        if (path == null || path.length() == 0) {
-        //            return;
-        //        }
-        String absPath = makePathAbsolute(path);
-        String startPath = findStartPath(absPath);
-        pathElements = Arrays.asList(absPath.substring(1).split("/"));
-        level = startPath.split("/").length - 2;
-        wildcardLevel = pathElements.indexOf("**");
-        return startPath;
-    }
-
     private String makePathAbsolute(String path) {
         if (path == null || path.length() == 0) {
             return "/";

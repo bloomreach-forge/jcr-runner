@@ -36,7 +36,7 @@ public class LoggingPlugin extends AbstractRunnerPlugin {
 
     @Override
     public void visit(Node node) {
-        log.info("Visiting node {}", JcrHelper.getSavePath(node));
+        log.info("Visiting node {}", JcrHelper.safeGetPath(node));
     }
 
     @Override

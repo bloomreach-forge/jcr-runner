@@ -236,7 +236,7 @@ public final class JcrHelper {
         return session;
     }
 
-    public static String getSavePath(Node node) {
+    public static String safeGetPath(Node node) {
         try {
             return node.getPath();
         } catch (RepositoryException e) {
@@ -245,4 +245,12 @@ public final class JcrHelper {
         }
     }
 
+    public static boolean safeItemExists(String absPath) {
+        try {
+            return session.itemExists(absPath);
+        } catch (RepositoryException e) {
+            log.warn("Eror while trying to determine the existance of item at path: " + absPath, e);
+            return false;
+        }
+    }
 }
