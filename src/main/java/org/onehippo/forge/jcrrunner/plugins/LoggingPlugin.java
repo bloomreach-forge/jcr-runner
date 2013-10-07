@@ -16,7 +16,6 @@
 package org.onehippo.forge.jcrrunner.plugins;
 
 import javax.jcr.Node;
-import javax.jcr.Session;
 
 import org.onehippo.forge.jcrrunner.JcrHelper;
 import org.onehippo.forge.jcrrunner.RunnerPlugin;
@@ -31,16 +30,8 @@ public class LoggingPlugin extends AbstractRunnerPlugin {
     private static Logger log = LoggerFactory.getLogger(LoggingPlugin.class);
 
     @Override
-    public void init(Session session) {
-    }
-
-    @Override
     public void visit(Node node) {
         log.info("Visiting node {}", JcrHelper.safeGetPath(node));
-    }
-
-    @Override
-    public void destroy(Session session) {
     }
 
 }

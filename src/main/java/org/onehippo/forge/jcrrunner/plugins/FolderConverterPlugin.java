@@ -18,7 +18,6 @@ package org.onehippo.forge.jcrrunner.plugins;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
-import javax.jcr.Session;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,11 +33,6 @@ public class FolderConverterPlugin extends AbstractRunnerPlugin {
     private static final String OLD_TYPE = "hippostd:directory";
     private static final String NEW_TYPE = "hippostd:folder";
     private static final String TMP_NAME = "tmptmptmptmp";
-
-
-    @Override
-    public void init(Session session) {
-    }
 
     public void visit(Node node) {
         try {
@@ -72,10 +66,6 @@ public class FolderConverterPlugin extends AbstractRunnerPlugin {
         } catch (RepositoryException e) {
             log.error("Error getting node path", e);
         }
-    }
-
-    @Override
-    public void destroy(Session session) {
     }
 
     private Node createTmpNode(Node parent) throws RepositoryException {

@@ -15,6 +15,10 @@
  */
 package org.onehippo.forge.jcrrunner.plugins;
 
+import javax.jcr.Node;
+import javax.jcr.Session;
+
+import org.onehippo.forge.jcrrunner.JcrHelper;
 import org.onehippo.forge.jcrrunner.RunnerPlugin;
 import org.onehippo.forge.jcrrunner.RunnerPluginConfig;
 
@@ -30,6 +34,15 @@ public abstract class AbstractRunnerPlugin implements RunnerPlugin {
      */
     private RunnerPluginConfig config;
 
+    @Override
+    public void init(Session session) {
+        // empty default implementation
+    }
+
+    @Override
+    public void destroy(Session session) {
+        // empty default implementation
+    }
 
     @Override
     public final String getId() {
