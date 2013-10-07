@@ -19,6 +19,7 @@ import java.net.MalformedURLException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
+import javax.jcr.ItemNotFoundException;
 import javax.jcr.LoginException;
 import javax.jcr.Node;
 import javax.jcr.Repository;
@@ -202,10 +203,29 @@ public final class JcrHelper {
         if (!isHippoRepository()) {
             return false;
         }
+        /**
+         * It would be nice to use:
+         *     return ((HippoNode) jcrNode).isVirtual()
+         * of probably by saving a call over the wire:
+         *     return getIdentifier().startsWith("cafeface");
+         * but it's only available form 7.8 and up (repo: 2.24.00)
+         * So for compatibility use the "old" method.
+         */
         try {
-            return ((HippoNode) jcrNode).isVirtual();
+            if (!(jcrNode instanceof HippoNode)) { 
+                return false;
+            }
+            HippoNode hippoNode = (HippoNode) jcrNode;
+            Node canonical = hippoNode.getCanonicalNode();
+            if (canonical == null) {
+                return true;
+            }
+            return !canonical.isSame(hippoNode);
+        } catch (ItemNotFoundException e) {
+            // canonical node no longer exists
+            return true;
         } catch (RepositoryException e) {
-            log.error("Error while determining if the node is virtual", e);
+            log.error("Error while determining if the node is virtual",e);
             return false;
         }
     }
