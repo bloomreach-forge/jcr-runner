@@ -16,10 +16,15 @@
 package org.onehippo.forge.jcrrunner;
 
 import java.io.BufferedInputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Main wrapper to start the runner.
@@ -29,6 +34,8 @@ public final class JcrRunner {
     private static Runner runner = null;
 
     private static final String DEFAULT_CONFIG_FILE = "runner.properties";
+
+    private static final Logger log = LoggerFactory.getLogger(JcrRunner.class);
 
     /**
      * Private constructor.
@@ -57,17 +64,22 @@ public final class JcrRunner {
 
     static RunnerConfig parseConfig(String[] args) throws IOException {
         // read & parse config
+        InputStream configStream;
         RunnerConfig config;
         if (args != null && args.length > 0) {
             Properties props = new Properties();
             for (String arg : args) {
                 File file = new File(arg);
-                props.load(new BufferedInputStream(new FileInputStream(file)));
+                configStream = new BufferedInputStream(new FileInputStream(file));
+                props.load(configStream);
+                closeQuietly(configStream);
             }
             config = new RunnerConfig(props);
         } else {
             File file = new File(DEFAULT_CONFIG_FILE);
+            configStream = new BufferedInputStream(new FileInputStream(file));
             config = new RunnerConfig(new BufferedInputStream(new FileInputStream(file)));
+            closeQuietly(configStream);
         }
         return config;
     }
@@ -84,6 +96,16 @@ public final class JcrRunner {
                 runner.stop();
             }
             JcrHelper.disconnect();
+        }
+    }
+
+    public static void closeQuietly(Closeable closeable) {
+        try {
+            if (closeable != null) {
+                closeable.close();
+            }
+        } catch (IOException ioe) {
+            log.debug("Error while closing: " + closeable.getClass().getSimpleName(), ioe);
         }
     }
 }
