@@ -15,10 +15,8 @@
  */
 package org.onehippo.forge.jcrrunner.plugins;
 
-import javax.jcr.Node;
 import javax.jcr.Session;
 
-import org.onehippo.forge.jcrrunner.JcrHelper;
 import org.onehippo.forge.jcrrunner.RunnerPlugin;
 import org.onehippo.forge.jcrrunner.RunnerPluginConfig;
 

@@ -18,7 +18,6 @@ package org.onehippo.forge.jcrrunner.plugins;
 import javax.jcr.Node;
 
 import org.onehippo.forge.jcrrunner.JcrHelper;
-import org.onehippo.forge.jcrrunner.RunnerPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
