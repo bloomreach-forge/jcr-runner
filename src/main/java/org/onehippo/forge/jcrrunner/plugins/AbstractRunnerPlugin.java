@@ -26,7 +26,7 @@ public abstract class AbstractRunnerPlugin implements RunnerPlugin {
      * Holder for the current plugin id
      */
     private String id;
-    
+
     /**
      * Holder for the current plugin's config
      */
@@ -94,5 +94,14 @@ public abstract class AbstractRunnerPlugin implements RunnerPlugin {
         } catch (NumberFormatException e) {
             return defaultValue;
         }
+    }
+
+    @Override
+    public final boolean getBooleanConfigValue(String key, boolean defaultValue) {
+        final String value = getConfigValue(key);
+        if (value == null || "".equals(value)) {
+            return defaultValue;
+        }
+        return Boolean.parseBoolean(value);
     }
 }
