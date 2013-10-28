@@ -118,7 +118,7 @@ public class Runner {
         pathElements = Arrays.asList(absPath.substring(1).split("/"));
         level = startPath.split("/").length - 2;
         wildcardLevel = pathElements.indexOf("**");
-        
+
         if (JcrHelper.safeItemExists(startPath)) {
             log.info("{}: Using path '{}'", plugin.getId(), path);
             recursiveVisit(plugin, startPath);
@@ -135,7 +135,7 @@ public class Runner {
             return;
         }
 
-        log.info("{}: Using query '{}', type '{}'", plugin.getId(), query, language);
+        log.info("{}: Using query '{}', type '{}'", new String[] {plugin.getId(), query, language});
 
         Session session = JcrHelper.getSession();
         QueryManager queryManager = session.getWorkspace().getQueryManager();

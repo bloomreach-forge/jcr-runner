@@ -87,18 +87,18 @@ public final class RunnerConfig {
 
     private void validateRunnerConfig() {
         if (isEmpty(getRepositoryUrl())) {
-            throw new IllegalArgumentException("repository.url is missing.");
+            throw new IllegalArgumentException(REPOSITORY_URL + " is missing.");
         }
         if (isEmpty(getRepositoryUser())) {
-            throw new IllegalArgumentException("repository.user is missing.");
+            throw new IllegalArgumentException(REPOSITORY_USER + " is missing.");
         }
         if (isEmpty(getRepositoryPass())) {
-            throw new IllegalArgumentException("repository.pass is missing.");
+            throw new IllegalArgumentException(REPOSITORY_PASS + " is missing.");
         }
     }
 
     private boolean isEmpty(String s) {
-        return s == null || "".equals(s);
+        return s == null || s.isEmpty();
     }
 
     private void readPluginInformation(Properties props) {

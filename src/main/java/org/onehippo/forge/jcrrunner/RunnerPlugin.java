@@ -20,7 +20,7 @@ import javax.jcr.Session;
 
 /**
  * All RunnerPlugins must implement this interface directly or
- * extend the {@link AbstractRunnerPlugin}.
+ * extend the {@link org.onehippo.forge.jcrrunner.plugins.AbstractRunnerPlugin}.
  */
 public interface RunnerPlugin {
 
@@ -49,7 +49,7 @@ public interface RunnerPlugin {
     /**
      * Get a value from the embedded {@link RunnerPluginConfig}
      * @param key the name of the key
-     * @param the default value
+     * @param defaultValue the default value
      * @return the String value or the default value if the key is not set
      */
     String getConfigValue(String key, String defaultValue);
@@ -57,7 +57,7 @@ public interface RunnerPlugin {
     /**
      * Get an boolean value from the embedded {@link RunnerPluginConfig}
      * @param key the name of the key
-     * @param the default value
+     * @param defaultValue the default value
      * @return the boolean value or the default value if the key is not set
      */
     boolean getBooleanConfigValue(String key, boolean defaultValue);
@@ -65,7 +65,7 @@ public interface RunnerPlugin {
     /**
      * Get an int value from the embedded {@link RunnerPluginConfig}
      * @param key the name of the key
-     * @param the default value
+     * @param defaultValue the default value
      * @return the int value or the default value if the key is not set
      */
     int getIntConfigValue(String key, int defaultValue);
@@ -73,7 +73,7 @@ public interface RunnerPlugin {
     /**
      * Get a long value from the embedded {@link RunnerPluginConfig}
      * @param key the name of the key
-     * @param the default value
+     * @param defaultValue the default value
      * @return the String value or the default value if the key is not set
      */
     long getLongConfigValue(String key, long defaultValue);

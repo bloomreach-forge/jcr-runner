@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Example {@link RunnerPlugin} implementation that just logs all calls.
+ * Example {@link org.onehippo.forge.jcrrunner.RunnerPlugin} implementation that just logs all calls.
  */
 public class LoggingPlugin extends AbstractRunnerPlugin {
 
@@ -32,5 +32,4 @@ public class LoggingPlugin extends AbstractRunnerPlugin {
     public void visit(Node node) {
         log.info("Visiting node {}", JcrHelper.safeGetPath(node));
     }
-
 }
