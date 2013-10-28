@@ -28,6 +28,8 @@ import org.slf4j.LoggerFactory;
  */
 new AbstractRunnerPlugin() {
 
+    private static Logger log = LoggerFactory.getLogger(FolderConverterPlugin.class);
+
     private static final String OLD_TYPE = "hippostd:directory";
     private static final String NEW_TYPE = "hippostd:folder";
     private static final String TMP_NAME = "tmptmptmptmp";
@@ -38,10 +40,13 @@ new AbstractRunnerPlugin() {
      */
     public void visit(Node node) {
         try {
+            log.info("Visit node {}", node.getPath());
+
             if (!node.getPrimaryNodeType().getName().equals(OLD_TYPE)) {
                 return;
             }
-            getLogger().info("Visit node {}", node.getPath());
+
+            log.info("Changing node from " + OLD_TYPE + " to " + NEW_TYPE + " for node: " + node.getPath());
 
             Node parent = node.getParent();
             Node newNode = createTmpNode(parent);
@@ -64,7 +69,7 @@ new AbstractRunnerPlugin() {
             
             parent.getSession().save();
         } catch (RepositoryException e) {
-            getLogger().error("Error getting node path", e);
+            log.error("Error getting node path", e);
         }
     }
 

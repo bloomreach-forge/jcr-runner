@@ -16,8 +16,8 @@
 package org.onehippo.forge.jcrrunner.plugins;
 
 import javax.jcr.Node;
-import javax.jcr.RepositoryException;
 
+import org.onehippo.forge.jcrrunner.JcrHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,14 +25,12 @@ import org.slf4j.LoggerFactory;
  * Example {@link RunnerPlugin} implementation that just logs all calls.
  */
 
-new AbstractRunnerPlugin {
+new AbstractRunnerPlugin() {
+
+    private static Logger log = LoggerFactory.getLogger(LoggingPlugin.class);
 
     public void visit(Node node) {
-        try {
-            getLogger().info("Visiting node {}", node.getPath());
-        } catch (RepositoryException e) {
-            getLogger().error("Error getting node path", e);
-        }
+        log.info("Visiting node {}", JcrHelper.safeGetPath(node));
     }
 
 };
