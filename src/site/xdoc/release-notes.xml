@@ -20,6 +20,25 @@
   </properties>
   <body>
     <section name="Release Notes">
+      <subsection name="1.03.00">
+        <ul>
+          <li><a href="https://issues.onehippo.com/browse/HIPPLUG-719">HIPPLUG-719</a><br/>
+            Specify query per plugin. This allows for running multiple plugins with their own query in one run.</li>
+          <li><a href="https://issues.onehippo.com/browse/HIPPLUG-718">HIPPLUG-718</a><br/>
+            Refactor and simplify API<br/>
+            The api now consists of just three calls:
+            <ul>
+              <li><code>init(Session session)</code>: called before the run. Can be used to parse configuration, do initialization.</li>
+              <li><code>visit(Node node)</code>: called once for each visited node.</li>
+              <li><code>destroy(Session session)</code>: called after the run. Can be used to do a last save, print statistics and cleanup.</li>
+            </ul>
+          </li>
+          <li><a href="https://issues.onehippo.com/browse/HIPPLUG-797">HIPPLUG-797</a><br/>
+            Make build compatible with maven 3.1.</li>
+        </ul>
+      </subsection>
+    </section>
+    <section name="Release Notes">
       <subsection name="1.02.06">
         <ul>
           <li><a href="https://issues.onehippo.com/browse/HIPPLUG-672">HIPPLUG-672</a><br/>
