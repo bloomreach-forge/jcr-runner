@@ -22,19 +22,32 @@
     <section name="Build and running">
       <subsection name="Maven dependency">
         <p>Preferred way is to get the code as Maven dependency into your project.</p>
+        <div class="brush: xml">
         <source><![CDATA[<dependency>
   <groupId>org.onehippo.forge.jcrrunner</groupId>
   <artifactId>jcrrunner</artifactId>
   <version>${forge.jcrrunner.version}</version>
 </dependency>]]></source>
+        </div>
       </subsection>
-      <subsection name="Build from source">
-        <p>If you want to build it yourself, check out the source from svn:</p>
-        <source>svn co http://forge.onehippo.org/svn/jcr-runner/trunk jcr-runner</source>
-        <p>In the project root type</p>
+      <subsection name="Fork me on GitHub">
+        <p>
+          Fork me on GitHub: <a href="https://github.com/onehippo-forge/jcr-runner" target="_blank">https://github.com/onehippo-forge/jcr-runner</a>.
+        </p>
+        <p>
+          Build the project using Maven:
+        </p>
+        <div class="brush: bash">
+        <source>$ mvn clean install</source>
+        </div>
+        <p>You can also execute it:</p>
+        <div class="brush: bash">
         <source>mvn clean compile exec:java</source>
+        </div>
         <p>After the first run you can use the slightly faster command</p>
+        <div class="brush: bash">
         <source>mvn -o -q compile exec:java</source>
+        </div>
       </subsection>
       <subsection name="Configuring the properties">
         <p>The properties can be found in the runner.properties</p>
@@ -45,17 +58,24 @@
             <strong>**</strong>
             can be used. For example:
           </p>
+          <div class="brush: plain">
           <source>repository.path=/content/documents/*/2009/**</source>
+          </div>
           <p>This will match /content/documents/[any path element]/2009/[everything below]</p>
         </subsection>
         <subsection name="Using queries">
+          <div class="brush: plain">
           <source>repository.query.language=xpath</source>
+          </div>
           <p>Specify the query language, in this case "xpath"</p>
+          <div class="brush: plain">
           <source>repository.query=content/gallery//element(*, hippogallery:imageset)</source>
+          </div>
           <p>This will match all document; within path "content/gallery which are of the type "hippogallery:imageset"
           </p>
         </subsection>
         <subsection name="Example path usage">
+          <div class="brush: plain">
           <source>  # repository configuration
   repository.url=rmi://127.0.0.1:1099/hipporepository
   repository.user=admin
@@ -66,8 +86,10 @@
 
   # Java plugins
   plugins.java.logplugin.class=org.onehippo.forge.jcrrunner.plugins.LoggingPlugin</source>
+          </div>
         </subsection>
         <subsection name="Example query usage">
+          <div class="brush: plain">
           <source>  # repository configuration
   repository.url=rmi://127.0.0.1:1099/hipporepository
   repository.user=admin
@@ -79,6 +101,7 @@
   # Java plugins
   plugins.java.logplugin.class=org.onehippo.forge.jcrrunner.plugins.LoggingPlugin
           </source>
+          </div>
         </subsection>
       </subsection>
     </section>
