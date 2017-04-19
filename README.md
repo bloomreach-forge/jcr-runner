@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/onehippo-forge/jcr-runner.svg?branch=develop)](https://travis-ci.org/onehippo-forge/jcr-runner)
 
 # Hippo JCR Runner
 
