@@ -3,3 +3,5 @@
 /.settings
 /jcr-runner.log
 /target
+/.idea
+*.iml

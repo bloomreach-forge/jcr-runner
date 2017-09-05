@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Copyright 2009-2013 Hippo B.V. (http://www.onehippo.com)
+  Copyright 2009-2017 Hippo B.V. (http://www.onehippo.com)
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with
@@ -20,6 +20,35 @@
   </properties>
   <body>
     <section name="Build and running">
+      <subsection name="Add the Forge repository configuration">
+        <p>In the main <code>pom.xml</code> of the project, in the <code>repositories</code> section, add this repository if it is not configured there yet.</p>
+        <div class="brush: xml">
+          <source><![CDATA[
+    <repository>
+      <id>hippo-forge</id>
+      <name>Hippo Forge maven 2 repository.</name>
+      <url>https://maven.onehippo.com/maven2-forge/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <layout>default</layout>
+    </repository>
+        ]]></source>
+        </div>
+      </subsection>
+
+      <subsection name="Add version property to the project pom">
+        <p>In the main <code>pom.xml</code> of the project, in the properties section, add this property. For the correct version number, check the <a href="release-notes.html">Release Notes</a> page.</p>
+        <div class="brush: xml">
+          <source><![CDATA[
+    <forge.jcrrunner.version>version.number</forge.jcrrunner.version>
+        ]]></source>
+        </div>
+      </subsection>
+
       <subsection name="Maven dependency">
         <p>Preferred way is to get the code as Maven dependency into your project.</p>
         <div class="brush: xml">
