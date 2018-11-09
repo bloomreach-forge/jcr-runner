@@ -99,6 +99,7 @@
     <!-- build properties -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.javaVersion>1.6</project.build.javaVersion>
+    <maven-site-plugin.version>3.6</maven-site-plugin.version>
   </properties>
 
   <repositories>
@@ -256,7 +257,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>3.6</version>
+        <version>${maven-site-plugin.version}</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -374,7 +375,7 @@
           <inherited>true</inherited>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
-          <version>3.3</version>
+          <version>${maven-site-plugin.version}</version>
           <configuration>
             <outputDirectory>docs</outputDirectory>
           </configuration>
