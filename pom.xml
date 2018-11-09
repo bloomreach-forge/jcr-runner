@@ -30,7 +30,7 @@
   <version>1.03.01-SNAPSHOT</version>
 
   <!--  general info -->
-  <url>https://onehippo-forge.github.io/jcr-runner/</url>
+  <url>https://bloomreach-forge.github.io/jcr-runner/</url>
   <organization>
     <name>Hippo</name>
     <url>http://www.onehippo.org/</url>
@@ -45,9 +45,9 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:git@github.com:onehippo-forge/jcr-runner.git</connection>
-    <developerConnection>scm:git:git@github.com:onehippo-forge/jcr-runner.git</developerConnection>
-    <url>https://github.com/onehippo-forge/jcr-runner.git</url>
+    <connection>scm:git:git@github.com:bloomreach-forge/jcr-runner.git</connection>
+    <developerConnection>scm:git:git@github.com:bloomreach-forge/jcr-runner.git</developerConnection>
+    <url>https://github.com/bloomreach-forge/jcr-runner.git</url>
     <tag>HEAD</tag>
   </scm>
 
@@ -58,7 +58,7 @@
 
   <ciManagement>
     <system>Travis CI</system>
-    <url>https://travis-ci.org/onehippo-forge/jcr-runner</url>
+    <url>https://travis-ci.org/bloomreach-forge/jcr-runner</url>
   </ciManagement>
 
   <distributionManagement>
@@ -256,7 +256,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>3.4</version>
+        <version>3.6</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
